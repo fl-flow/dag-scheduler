@@ -2,12 +2,14 @@ package app
 
 import (
   "fmt"
-
   "github.com/gin-gonic/gin"
 
+  "dag/common/db"
   "dag/common/parser"
+  "dag/common/db/model"
   "dag/http_server/form"
   "dag/http_server/controller"
+  "dag/http_server/http/mixin"
   "dag/http_server/http/response"
 )
 
@@ -23,7 +25,7 @@ func JobCreate(context *gin.Context) {
     )
     return
 	}
-  error := controller.JobCreate(
+  job, error := controller.JobCreate(
     f.Name,
     parser.Conf {
       Dag: f.Dag,
@@ -39,5 +41,24 @@ func JobCreate(context *gin.Context) {
     )
     return
   }
-  response.R(context, 0, "success", "success")
+  response.R(context, 0, "success", job)
+}
+
+
+func JobList(context *gin.Context) {
+  var jobs []model.Job
+  var total int64
+  queryset := mixin.List(context, db.DataBase.Model(model.Job{}))
+  queryset.Find(&jobs)
+  queryset.Count(&total)
+  response.R(
+    context,
+    0,
+    "success",
+    map[string]interface{}{
+      "count": total,
+      "result": jobs,
+    },
+  )
+  return
 }

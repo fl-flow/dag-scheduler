@@ -10,13 +10,13 @@ import (
 )
 
 
-func testParse(rawConf string) ([]dagparser.TaskParsered, parameterparser.Parameter, *dagerror.DagError){
+func testParse(rawConf string) ([]dagparser.TaskParsered, parameterparser.Parameter, *error.Error){
   var conf Conf
   var tasks []dagparser.TaskParsered
   var parameters parameterparser.Parameter
   ok := json.Unmarshal([]byte(rawConf), &conf)
   if ok != nil {
-    return tasks, parameters, &dagerror.DagError{Code: 10000}
+    return tasks, parameters, &error.Error{Code: 10000}
   }
   return Parse(conf)
 }

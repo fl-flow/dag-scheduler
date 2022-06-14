@@ -8,11 +8,11 @@ import (
 )
 
 
-func testParse(rawParameter string) (Parameter, *dagerror.DagError){
+func testParse(rawParameter string) (Parameter, *error.Error){
   var parameter Parameter
   ok := json.Unmarshal([]byte(rawParameter), &parameter)
   if ok != nil {
-    return parameter, &dagerror.DagError{Code: 12000}
+    return parameter, &error.Error{Code: 12000}
   }
   parameter1, ok1 := Parse(parameter)
   if ok1 != nil {

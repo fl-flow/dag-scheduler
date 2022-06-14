@@ -2,31 +2,32 @@ package controller
 
 import (
   "dag/common/db"
+  "dag/common/error"
   "dag/common/parser"
   "dag/common/db/model"
-  "dag/common/dag_error"
 )
 
 
-func JobCreate(name string, conf parser.Conf) *dagerror.DagError {
+func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
   // parse conf
-  orderedTasks, _, error := parser.Parse(conf)
-  if error != nil {
-    return error
+  var job model.Job
+  orderedTasks, _, e := parser.Parse(conf)
+  if e != nil {
+    return job, e
   }
   // Are there any tasks
   if len(orderedTasks) == 0 {
-    return &dagerror.DagError{Code: 110010}
+    return job, &error.Error{Code: 110010}
   }
 
   // TODO: cmd validate
 
   // insert to db (job and tasks)
   // insert job
-  var job = model.Job {
+  job = model.Job {
     Name: name,
     Dag: orderedTasks,
-    RawDagmap: conf.Dag,
+    RawDag: conf.Dag,
     Parameter: model.JobParameter(conf.Parameter),
     Status: "init",
   }
@@ -54,5 +55,6 @@ func JobCreate(name string, conf parser.Conf) *dagerror.DagError {
   }
   db.DataBase.Create(&tasks)
   tx.Commit()
-  return nil
+  job.Tasks = tasks
+  return job, nil
 }

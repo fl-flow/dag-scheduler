@@ -1,17 +1,18 @@
-package dagerror
+package error
 
 import (
   "fmt"
 )
 
 
-type DagError struct {
+type Error struct {
   Code  int
   Msg   string
+  Hits  string
 }
 
 
-func (e *DagError) Error() string {
+func (e *Error) Error() string {
   var msg string
   if(e.Msg==""){
     msg = Conf[e.Code]
@@ -26,12 +27,9 @@ func (e *DagError) Error() string {
 }
 
 
-func (e *DagError) Message() string {
-  var msg string
-  if(e.Msg==""){
-    msg = Conf[e.Code]
-  } else {
-    msg = e.Msg
+func (e *Error) Message() interface{} {
+  return map[string]interface{} {
+    "message": Conf[e.Code],
+    "hits": e.Hits,
   }
-  return msg
 }

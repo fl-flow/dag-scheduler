@@ -2,13 +2,13 @@ package parser
 
 import (
   "fmt"
-  "dag/common/dag_error"
+  "dag/common/error"
   "dag/common/parser/dag_parser"
   "dag/common/parser/parameter_parser"
 )
 
 
-func Parse(conf Conf) ([]dagparser.TaskParsered, parameterparser.Parameter, *dagerror.DagError){
+func Parse(conf Conf) ([]dagparser.TaskParsered, parameterparser.Parameter, *error.Error){
   var tasks []dagparser.TaskParsered
   var parameters parameterparser.Parameter
 
@@ -30,16 +30,16 @@ func Parse(conf Conf) ([]dagparser.TaskParsered, parameterparser.Parameter, *dag
 
 func checkDagParameter(
   tasks []dagparser.TaskParsered,
-  parameters parameterparser.Parameter) *dagerror.DagError {
+  parameters parameterparser.Parameter) *error.Error {
   if len(tasks) != len(parameters.Tasks) {
-    return &dagerror.DagError{Code: 12010}
+    return &error.Error{Code: 12010}
   }
   for _, task := range tasks {
     _, ok := parameters.Tasks[task.Name]
     if !ok {
-      return &dagerror.DagError{
+      return &error.Error{
         Code: 12020,
-        Msg: fmt.Sprintf(
+        Hits: fmt.Sprintf(
             "dag's task %v is not in parameters",
             task.Name,
         ),

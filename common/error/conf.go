@@ -1,4 +1,4 @@
-package dagerror
+package error
 
 
 var Conf = map[int]string {
@@ -7,7 +7,7 @@ var Conf = map[int]string {
   10000: "parser error",
 
   11000: "dag parser error", // base
-  11010: "dag parser error( task.tag )",
+  11010: "dag parser error( required task.tag; task and tag can't contain '.' )",
   11020: "dag parser error( task.tag; task not exits)",
   11030: "dag parser error( loop found)",
   11040: "dag parser error( cmd is required )",

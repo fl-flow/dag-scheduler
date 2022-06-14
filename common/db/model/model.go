@@ -18,8 +18,9 @@ type Job struct {
   Name            string
   Description     string
   Dag             JobDag        `gorm:"type:json"`
-  RawDagmap       JobRawDagmap  `gorm:"type:json"`
+  RawDag          JobRawDagmap  `gorm:"type:json"`
   Parameter       JobParameter  `gorm:"type:json"`
+  Tasks           []Task
 }
 
 
