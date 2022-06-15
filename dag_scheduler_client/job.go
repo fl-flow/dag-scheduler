@@ -3,8 +3,8 @@ package dagschedulerclient
 import (
   "log"
   "encoding/json"
-  "dag/common/error"
-  "dag/common/db/model"
+  "github.com/fl-flow/dag-scheduler/common/error"
+  "github.com/fl-flow/dag-scheduler/common/db/model"
   "github.com/mitchellh/mapstructure"
 )
 

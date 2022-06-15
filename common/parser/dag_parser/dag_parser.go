@@ -3,7 +3,7 @@ package dagparser
 import(
   "fmt"
   "strings"
-  "dag/common/error"
+  "github.com/fl-flow/dag-scheduler/common/error"
 )
 
 

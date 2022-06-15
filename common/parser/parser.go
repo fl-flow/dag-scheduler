@@ -2,9 +2,9 @@ package parser
 
 import (
   "fmt"
-  "dag/common/error"
-  "dag/common/parser/dag_parser"
-  "dag/common/parser/parameter_parser"
+  "github.com/fl-flow/dag-scheduler/common/error"
+  "github.com/fl-flow/dag-scheduler/common/parser/dag_parser"
+  "github.com/fl-flow/dag-scheduler/common/parser/parameter_parser"
 )
 
 

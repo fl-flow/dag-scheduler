@@ -1,10 +1,10 @@
 package controller
 
 import (
-  "dag/common/db"
-  "dag/common/error"
-  "dag/common/parser"
-  "dag/common/db/model"
+  "github.com/fl-flow/dag-scheduler/common/db"
+  "github.com/fl-flow/dag-scheduler/common/error"
+  "github.com/fl-flow/dag-scheduler/common/parser"
+  "github.com/fl-flow/dag-scheduler/common/db/model"
 )
 
 

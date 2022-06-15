@@ -1,8 +1,8 @@
 package main
 
 import (
-  _ "dag/common/db"
-  "dag/http_server"
+  _ "github.com/fl-flow/dag-scheduler/common/db"
+  "github.com/fl-flow/dag-scheduler/http_server"
 )
 
 

@@ -7,9 +7,9 @@ import (
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "dag/docs"
-	"dag/http_server/app"
-	"dag/http_server/http/middleware"
+	_ "github.com/fl-flow/dag-scheduler/docs"
+	"github.com/fl-flow/dag-scheduler/http_server/app"
+	"github.com/fl-flow/dag-scheduler/http_server/http/middleware"
 )
 
 func Run() {

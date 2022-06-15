@@ -1,7 +1,7 @@
 package parameterparser
 
 import (
-  "dag/common/error"
+  "github.com/fl-flow/dag-scheduler/common/error"
 )
 
 

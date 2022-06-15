@@ -6,7 +6,7 @@ import (
   "net/rpc"
   "net/rpc/jsonrpc"
 
-  "dag/rpc/methods/task"
+  "github.com/fl-flow/dag-scheduler/rpc/methods/task"
 )
 
 

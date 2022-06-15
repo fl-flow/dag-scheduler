@@ -2,7 +2,7 @@ package dagparser
 
 import(
   "encoding/json"
-  "dag/common/error"
+  "github.com/fl-flow/dag-scheduler/common/error"
   "testing"
   "fmt"
 )

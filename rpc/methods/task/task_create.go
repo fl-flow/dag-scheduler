@@ -1,7 +1,7 @@
 package rpctask
 
 import (
-  "dag/common/parser"
+  "github.com/fl-flow/dag-scheduler/common/parser"
 )
 
 

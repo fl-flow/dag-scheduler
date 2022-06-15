@@ -4,7 +4,7 @@ import (
   "fmt"
   "testing"
   "net/rpc/jsonrpc"
-  "dag/common/parser"
+  "github.com/fl-flow/dag-scheduler/common/parser"
 )
 
 func TestCreateTask(t *testing.T) {

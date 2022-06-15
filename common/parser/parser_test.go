@@ -4,9 +4,9 @@ import (
   "fmt"
   "testing"
   "encoding/json"
-  "dag/common/dag_error"
-  "dag/common/parser/dag_parser"
-  "dag/common/parser/parameter_parser"
+  "github.com/fl-flow/dag-scheduler/common/dag_error"
+  "github.com/fl-flow/dag-scheduler/common/parser/dag_parser"
+  "github.com/fl-flow/dag-scheduler/common/parser/parameter_parser"
 )
 
 

@@ -5,7 +5,7 @@ import (
   "gorm.io/gorm"
   "gorm.io/driver/sqlite"
 
-  "dag/common/db/model"
+  "github.com/fl-flow/dag-scheduler/common/db/model"
 )
 
 
