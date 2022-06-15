@@ -5,7 +5,10 @@ import (
   "github.com/fl-flow/dag-scheduler/common/parser/parameter_parser"
 )
 
+
+type GroupConf map[string](dagparser.DagTask)
+
 type Conf struct {
-  Dag         map[string](dagparser.DagTask)  `json:"dag"`
-  Parameter   parameterparser.Parameter       `json:"parameter"`
+  Dag         map[string]GroupConf                    `json:"dag"`
+  Parameter   map[string]parameterparser.Parameter    `json:"parameter"`
 }

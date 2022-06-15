@@ -28,6 +28,7 @@ type Task struct {
   BaseModel
   JobId           uint
   Job             Job           `gorm:"ForeignKey:JobId;AssociationForeignKey:ID"`
+  Group           string
   Status          TaskStatus    `gorm:"type:int"`
   Name            string
   Description     string

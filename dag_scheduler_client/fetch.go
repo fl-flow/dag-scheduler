@@ -24,9 +24,9 @@ func fetch(method string, uri string, jsonData []byte) []byte {
 		log.Fatalf("request for '%s' failed: %v\n", url, err)
 	}
   defer response.Body.Close()
+  body, _ := ioutil.ReadAll(response.Body)
   if response.StatusCode != 200 {
-    log.Fatalf("request for '%s' status : %v\n", url, response.StatusCode)
+    log.Fatalf("request for '%s' status : %v\n body: %v\n", url, response.StatusCode, string(body))
   }
-	body, _ := ioutil.ReadAll(response.Body)
   return body
 }

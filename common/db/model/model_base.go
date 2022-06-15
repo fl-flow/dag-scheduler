@@ -4,6 +4,7 @@ import (
 	"errors"
 	"encoding/json"
 	"database/sql/driver"
+	"github.com/fl-flow/dag-scheduler/common/parser"
 	"github.com/fl-flow/dag-scheduler/common/parser/dag_parser"
 	"github.com/fl-flow/dag-scheduler/common/parser/parameter_parser"
 )
@@ -18,39 +19,39 @@ func getReverseMap(m map[int]string) map[string]int {
 }
 
 
-type JobDag 				[]dagparser.TaskParsered
+type JobDag 				map[string](*([]dagparser.TaskParsered))
 
 func (c JobDag) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
 	return string(b), err
 }
 
-func (c JobDag) Scan(src any) error {
-	return json.Unmarshal(src.([]byte), c)
+func (c *JobDag) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
 }
 
 
-type JobRawDagmap   map[string](dagparser.DagTask)
+type JobRawDagmap   map[string](parser.GroupConf)
 
 func (c JobRawDagmap) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
 	return string(b), err
 }
 
-func (c JobRawDagmap) Scan(src any) error {
-	return json.Unmarshal(src.([]byte), c)
+func (c *JobRawDagmap) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
 }
 
 
-type JobParameter   parameterparser.Parameter
+type JobParameter   map[string]parameterparser.Parameter
 
 func (c JobParameter) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
 	return string(b), err
 }
 
-func (c JobParameter) Scan(src any) error {
-	return json.Unmarshal(src.([]byte), c)
+func (c *JobParameter) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
 }
 
 
@@ -61,8 +62,8 @@ func (c TaskUpTasks) Value() (driver.Value, error) {
 	return string(b), err
 }
 
-func (c TaskUpTasks) Scan(src any) error {
-	return json.Unmarshal(src.([]byte), c)
+func (c *TaskUpTasks) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
 }
 
 
@@ -76,8 +77,8 @@ var JobStatusMap = map[int]string {
 }
 var JobStatusReverseMap map[string]int
 
-func (c *JobStatus) Scan(value int) error {
-	d, ok := JobStatusMap[value]
+func (c *JobStatus) Scan(value interface{}) error {
+	d, ok := JobStatusMap[int(value.(int64))]
 	if !ok {
 		for _, v := range JobStatusMap {
 			*c = JobStatus(v)
@@ -113,8 +114,8 @@ var TaskStatusMap = map[int]string {
 }
 var TaskStatusReverseMap map[string]int
 
-func (c *TaskStatus) Scan(value int) error {
-	d, ok := TaskStatusMap[value]
+func (c *TaskStatus) Scan(value interface{}) error {
+	d, ok := TaskStatusMap[int(value.(int64))]
 	if !ok {
 		for _, v := range TaskStatusMap {
 			*c = TaskStatus(v)

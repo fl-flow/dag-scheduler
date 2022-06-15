@@ -6,13 +6,15 @@ import (
 )
 
 
-func List(context *gin.Context, d *gorm.DB) *gorm.DB {
+func List(context *gin.Context, d *gorm.DB) (*gorm.DB, int, int) {
   var pagination PageNumberPagination
   context.ShouldBindQuery(&pagination)
   size := pagination.Size
-  if size > MaxSize {
+  if size == 0 {
+    size = DefaultSize
+  }else if size > MaxSize {
     size = MaxSize
   }
   d_ := d.Offset((pagination.Page - 1) * size).Limit(size)
-  return d_
+  return d_, pagination.Page, size
 }
