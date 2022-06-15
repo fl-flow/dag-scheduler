@@ -4,7 +4,7 @@ import (
   "fmt"
   "testing"
   "encoding/json"
-  "github.com/fl-flow/dag-scheduler/common/dag_error"
+  "github.com/fl-flow/dag-scheduler/common/error"
 )
 
 
