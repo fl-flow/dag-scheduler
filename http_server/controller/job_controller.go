@@ -38,9 +38,10 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
   for group, orderedTasks := range orderedTasksMap {
     tasks = mergeTasks(tasks, orderedTasks, group)
   }
-  for index, _ := range tasks {
+  for index, task := range tasks {
     tasks[index].Job = job
     tasks[index].OrderInJob = index
+    tasks[index].MemoryLimited = parameterMap[task.Group].Tasks[task.Name].Setting.Resource.Memory
   }
   db.DataBase.Create(&tasks)
   tx.Commit()
@@ -64,7 +65,7 @@ func mergeTasks(fTasks []model.Task, lTasks *[]dagparser.TaskParsered, group str
       Group: group,
       Status: "init",
       UpTasks: ups,
-      MemoryLimited: 0,
+      // MemoryLimited: 0,
       Cmd: lt.Cmd,
       ValidateCmd: lt.ValidateCmd,
     }

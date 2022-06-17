@@ -6,6 +6,6 @@ const DefaultSize int = 20
 
 
 type PageNumberPagination struct {
-  Page  int
-  Size  int
+  Page  int   `form:"page"`
+  Size  int   `form:"size"`
 }

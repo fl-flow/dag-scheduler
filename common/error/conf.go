@@ -20,4 +20,6 @@ var Conf = map[int]string {
   110000: "job http api error", // base
   110010: "job http api error (no tasks)",
 
+  80000: "client error",
+  80010: "client remote error",
 }

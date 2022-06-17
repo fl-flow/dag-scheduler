@@ -7,10 +7,12 @@ import (
   "bytes"
   "net/http"
 	"io/ioutil"
+
+  "github.com/fl-flow/dag-scheduler/common/error"
 )
 
 
-func fetch(method string, uri string, jsonData []byte) []byte {
+func fetch(method string, uri string, jsonData []byte) ([]byte, *error.Error) {
   url := fmt.Sprintf("%s%s", Host, uri)
   request, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -26,7 +28,11 @@ func fetch(method string, uri string, jsonData []byte) []byte {
   defer response.Body.Close()
   body, _ := ioutil.ReadAll(response.Body)
   if response.StatusCode != 200 {
-    log.Fatalf("request for '%s' status : %v\n body: %v\n", url, response.StatusCode, string(body))
+    log.Println("request for '%s' status : %v\n body: %v\n", url, response.StatusCode, string(body))
+    return body, &error.Error{
+      Code: 80010,
+      Hits: string(body),
+    }
   }
-  return body
+  return body, nil
 }

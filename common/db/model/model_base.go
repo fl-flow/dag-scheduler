@@ -105,11 +105,11 @@ func (c JobStatus) Value() (driver.Value, error) {
 type TaskStatus		string
 var TaskStatusMap = map[int]string {
 	0: "init",
-	1: "waiting",
-	2: "ready",
-	3: "running",
-	4: "success",
-	5: "failed",
+	1: "ready",
+	2: "running",
+	3: "success",
+	4: "failed",
+	5: "timeout",
 	6: "cancelled",
 }
 var TaskStatusReverseMap map[string]int

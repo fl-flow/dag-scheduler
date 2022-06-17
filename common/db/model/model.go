@@ -35,7 +35,7 @@ type Task struct {
   Pid             int
   OrderInJob      int
   UpTasks         TaskUpTasks    `gorm:"type:json"`
-  MemoryLimited   int
+  MemoryLimited   int64
   Cmd             string
   ValidateCmd     string
 }

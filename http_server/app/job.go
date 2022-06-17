@@ -47,22 +47,10 @@ func JobCreate(context *gin.Context) {
 
 func JobList(context *gin.Context) {
   var jobs []model.Job
-  var total int64
-  queryset, page, size := mixin.List(context, db.DataBase.Model(model.Job{}).Preload("Tasks"))
-  queryset.Find(&jobs)
-  queryset.Count(&total)
-  response.R(
+  mixin.List(
     context,
-    0,
-    "success",
-    map[string]interface{}{
-      "count": total,
-      "result": map[string]interface {} {
-        "list": jobs,
-        "page": page,
-        "size": size,
-      },
-    },
+    db.DataBase.Model(model.Job{}).Preload("Tasks"),
+    jobs,
   )
   return
 }
