@@ -2,6 +2,8 @@ package scheduler
 
 import (
   "log"
+  "gorm.io/gorm/clause"
+
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
 )
@@ -14,13 +16,23 @@ func InitTasks() {
 
 
 func initTaskOne(t model.Task) bool {
-  // TODO: rwlock
   if t.MemoryLimited < (TotalMemory - LockedMemory) {
-    // database lock
+    MemoryRwMutex.Lock()
+    defer MemoryRwMutex.Unlock()
+    if t.MemoryLimited > (TotalMemory - LockedMemory) {
+      return true
+    }
     log.Println("task init -> ready: id-", t.ID)
     LockedMemory = LockedMemory + t.MemoryLimited
+    // TODO: database lock (test in mysql)
+    tx := db.DataBase.Debug().Begin()
+    defer tx.Commit()
+    tx.Clauses(clause.Locking{Strength: "UPDATE"}).Find(&t)
+    if t.Status != "init" {
+      return false
+    }
     t.Status = "ready"
-    db.DataBase.Save(&t)
+    tx.Save(&t)
     return false
   } else {
     return true

@@ -8,10 +8,12 @@ import (
 )
 
 
-func List(context *gin.Context, d *gorm.DB, listContainer interface{}) {
+func List(context *gin.Context, qs *gorm.DB)(
+    *gorm.DB, int64, int, int,
+) {
   var pagination PageNumberPagination
   var total int64
-  d.Count(&total)
+  qs.Count(&total)
   context.ShouldBindQuery(&pagination)
   size := pagination.Size
   if size <= 0 {
@@ -23,15 +25,26 @@ func List(context *gin.Context, d *gorm.DB, listContainer interface{}) {
   if page <= 0 {
     page = 1
   }
-  d_ := d.Offset((page - 1) * size).Limit(size)
-  d_.Find(&listContainer)
+  qs = qs.Offset((page - 1) * size).Limit(size)
+  return qs, total, page, size
+
+}
+
+
+func ListResponse(
+    context *gin.Context,
+    data interface{},
+    total int64,
+    page int,
+    size int,
+) {
   response.R(
     context,
     0,
     "success",
     map[string]interface{}{
       "count": total,
-      "list": listContainer,
+      "list": data,
       "page": page,
       "size": size,
     },

@@ -26,25 +26,32 @@ type Job struct {
 
 type Task struct {
   BaseModel
-  JobId           uint
-  Job             Job           `gorm:"ForeignKey:JobId;AssociationForeignKey:ID"`
+  JobID           uint
+  Job             Job
   Group           string
   Status          TaskStatus    `gorm:"type:int"`
   Name            string
   Description     string
   Pid             int
   OrderInJob      int
-  UpTasks         TaskUpTasks    `gorm:"type:json"`
+  UpTasks         []Task        `gorm:"many2many:TaskLink;joinForeignKey:DownId;joinReferences:UpId"`
+  DownTasks       []Task        `gorm:"many2many:TaskLink;joinForeignKey:UpId;joinReferences:DownId"`
   MemoryLimited   int64
   Cmd             string
   ValidateCmd     string
 }
 
 
+type TaskLink struct {
+	UpId           uint
+	DownId         uint
+}
+
+
 type TaskResult struct {
   BaseModel
   TaskId          uint
-  Task            Task          `gorm:"ForeignKey:TaskId;AssociationForeignKey:ID"`
+  Task            Task
   Tag             string
   Ret             string
 }
