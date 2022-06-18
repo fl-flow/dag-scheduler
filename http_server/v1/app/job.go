@@ -7,9 +7,9 @@ import (
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/parser"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/http_server/form"
-  "github.com/fl-flow/dag-scheduler/http_server/controller"
+  "github.com/fl-flow/dag-scheduler/http_server/v1/form"
   "github.com/fl-flow/dag-scheduler/http_server/http/mixin"
+  "github.com/fl-flow/dag-scheduler/http_server/v1/controller"
   "github.com/fl-flow/dag-scheduler/http_server/http/response"
 )
 

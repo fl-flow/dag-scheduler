@@ -37,7 +37,7 @@ func Loop() {
 
   log.Println("loop started")
   wait.Wait()
-  log.Println("some loop func error")
+  log.Fatalf("some loop func error")
 }
 
 
