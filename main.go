@@ -1,7 +1,8 @@
 package main
 
 import (
-  "sync"
+  "flag"
+  
   _ "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/http_server"
   "github.com/fl-flow/dag-scheduler/dag_scheduler"
@@ -9,9 +10,10 @@ import (
 
 
 func main() {
-  wait := &sync.WaitGroup{}
-  wait.Add(1)
-  go dagscheduler.Run(wait)
-  go httpserver.Run(wait)
-  wait.Wait()
+  ip := flag.String("ip", "127.0.0.1", "ip")
+	port := flag.Int("port", 8000, "port")
+	flag.Parse()
+
+  go dagscheduler.Run()
+  httpserver.Run(*ip, *port)
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-  "fmt"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/error"
   "github.com/fl-flow/dag-scheduler/common/parser"
@@ -123,7 +122,6 @@ func tasksInsert(
   ups []([]string),
 ) {
   // i := 0
-  fmt.Println(tasks, ups, "upsupsups")
   insertedTaskName2IDMap := map[string]uint{}
   var insertingTaskBatch []model.Task
   var insertingTaskIndex []int
@@ -148,7 +146,6 @@ func tasksInsert(
       insertingTaskBatch = append(insertingTaskBatch, t)
       insertingTaskIndex = append(insertingTaskIndex, index)
     } else {
-      fmt.Println(ups)
       taskInsert(insertingTaskBatch, insertingTaskIndex, insertedTaskName2IDMap, ups)
       insertingTaskBatch = []model.Task{t}
       insertingTaskIndex = []int{index}
@@ -166,15 +163,10 @@ func taskInsert(
   insertedTaskName2IDMap (map[string]uint),
   ups []([]string),
 ) {
-  fmt.Println(insertingTaskBatch, "tasks")
-  fmt.Println(insertedTaskName2IDMap, "map")
-  fmt.Println(insertingTaskIndex, "index")
-  fmt.Println(ups, "uuuu")
   db.DataBase.Debug().Create(insertingTaskBatch)
   insertingLinks := []model.TaskLink{}
   for index, it := range insertingTaskBatch {
     insertedTaskName2IDMap[it.Name] = it.ID
-    fmt.Println(ups[insertingTaskIndex[index]], "ups[insertingTaskIndex[index]]ups[insertingTaskIndex[index]]")
     for _, up := range ups[insertingTaskIndex[index]] {
       insertingLinks = append(insertingLinks, model.TaskLink{
         UpId: insertedTaskName2IDMap[up],

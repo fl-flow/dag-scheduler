@@ -10,8 +10,7 @@ import (
 )
 
 
-func Loop(w *sync.WaitGroup) {
-  defer w.Done()
+func Loop() {
   log.Println("loop starting ...")
   wait = &sync.WaitGroup{}
   wait.Add(1)
