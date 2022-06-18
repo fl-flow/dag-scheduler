@@ -26,6 +26,7 @@ type Job struct {
 
 type Task struct {
   BaseModel
+  ID              uint          `gorm:"primarykey"`
   JobID           uint
   Job             Job
   Group           string

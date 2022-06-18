@@ -48,7 +48,7 @@ func JobCreate(context *gin.Context) {
 func JobList(context *gin.Context) {
   qs, total, page, size := mixin.List(
     context,
-    db.DataBase.Debug(),
+    db.DataBase.Model(&model.Job{}),
   )
   var jobs []model.Job
   qs.Preload("Tasks").Find(&jobs)

@@ -8,7 +8,7 @@ import (
 
 func ReadyTasks() {
   defer wait.Done()
-  ActionLoop(readyTaskOne, "ready")
+  ActionLoop(readyTaskOne, model.TaskReady)
 }
 
 

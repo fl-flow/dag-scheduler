@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"encoding/json"
 	"database/sql/driver"
 	"github.com/fl-flow/dag-scheduler/common/parser"
@@ -64,76 +63,4 @@ func (c TaskUpTasks) Value() (driver.Value, error) {
 
 func (c *TaskUpTasks) Scan(src any) error {
 	return json.Unmarshal(([]byte)(src.(string)), c)
-}
-
-
-type JobStatus	string
-var JobStatusMap = map[int]string {
-	0: "init",
-	1: "running",
-	2: "success",
-	3: "failed",
-	4: "cancelled",
-}
-var JobStatusReverseMap map[string]int
-
-func (c *JobStatus) Scan(value interface{}) error {
-	d, ok := JobStatusMap[int(value.(int64))]
-	if !ok {
-		for _, v := range JobStatusMap {
-			*c = JobStatus(v)
-			return nil
-		}
-		return errors.New("error enum scan")
-	}
-	*c = JobStatus(d)
-  return nil
-}
-
-func (c JobStatus) Value() (driver.Value, error) {
-	d, ok := JobStatusReverseMap[string(c)]
-	if !ok {
-		for _, v := range JobStatusReverseMap {
-			return int64(v), nil
-		}
-		return d, errors.New("error enum value")
-	}
-  return int64(d), nil
-}
-
-
-type TaskStatus		string
-var TaskStatusMap = map[int]string {
-	0: "init",
-	1: "ready",
-	2: "running",
-	3: "success",
-	4: "failed",
-	5: "timeout",
-	6: "cancelled",
-}
-var TaskStatusReverseMap map[string]int
-
-func (c *TaskStatus) Scan(value interface{}) error {
-	d, ok := TaskStatusMap[int(value.(int64))]
-	if !ok {
-		for _, v := range TaskStatusMap {
-			*c = TaskStatus(v)
-			return nil
-		}
-		return errors.New("error enum scan")
-	}
-	*c = TaskStatus(d)
-  return nil
-}
-
-func (c TaskStatus) Value() (driver.Value, error) {
-	d, ok := TaskStatusReverseMap[string(c)]
-	if !ok {
-		for _, v := range TaskStatusReverseMap {
-			return int64(v), nil
-		}
-		return d, errors.New("error enum value")
-	}
-  return int64(d), nil
 }

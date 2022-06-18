@@ -31,7 +31,7 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
     Dag: orderedTasksMap,
     RawDag: conf.Dag,
     Parameter: model.JobParameter(parameterMap),
-    Status: "init",
+    Status: model.JobInit,
   }
   tx := db.DataBase.Begin()
   db.DataBase.Create(&job)
@@ -71,7 +71,7 @@ func mergeTasks(
       Description: "", // TODO:
       // Pid: nil,
       Group: group,
-      Status: "init",
+      Status: model.TaskInit,
       // UpTasks: ups,
       Cmd: lt.Cmd,
       ValidateCmd: lt.ValidateCmd,
