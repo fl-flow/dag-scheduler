@@ -10,7 +10,7 @@ import (
 
 func InitTasks() {
   defer wait.Done()
-  ActionLoop(initTaskOne, model.TaskInit)
+  ActionLoop(db.DataBase.Where("status = ?", model.TaskInit), initTaskOne)
 }
 
 

@@ -3,9 +3,8 @@ package scheduler
 import (
   "log"
   "sync"
-  "fmt"
   "time"
-  "github.com/fl-flow/dag-scheduler/common/db"
+  "gorm.io/gorm"
   "github.com/fl-flow/dag-scheduler/common/db/model"
 )
 
@@ -45,14 +44,11 @@ func Loop() {
 type DoOneModel func(t model.Task) bool
 
 
-func ActionLoop(doOneModel DoOneModel, filterStatus model.TaskStatus) {
+func ActionLoop(qs *gorm.DB, doOneModel DoOneModel) {
   offset := 0
   for true {
-    fmt.Println(filterStatus)
     var tasks []model.Task
-    db.DataBase.Model(model.Task{}).Debug().Offset(offset).Limit(Limit).Find(
-      &tasks, model.Task{Status: filterStatus},
-    )
+    qs.Debug().Offset(offset).Limit(Limit).Find(&tasks,)
     for _, t := range tasks {
       isDone := doOneModel(t)
       if isDone {

@@ -40,6 +40,7 @@ type Task struct {
   MemoryLimited   int64
   Cmd             string
   ValidateCmd     string
+  CmdRet          string
 }
 
 
