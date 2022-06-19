@@ -72,6 +72,7 @@ func mergeTasks(
       Group: group,
       Status: model.TaskInit,
       // UpTasks: ups,
+      Dag: model.TaskDag(lt),
       Cmd: lt.Cmd,
       ValidateCmd: lt.ValidateCmd,
     }
@@ -122,7 +123,7 @@ func tasksInsert(
   ups []([]string),
 ) {
   // i := 0
-  insertedTaskName2IDMap := map[string]uint{}
+  insertedGroup2TaskName2IDMap := map[string](map[string]uint){}
   var insertingTaskBatch []model.Task
   var insertingTaskIndex []int
   for index, t := range tasks {
@@ -130,7 +131,7 @@ func tasksInsert(
     canInsert := true
     for _, up := range ups[index] {
       canInsert = false
-      for insertedTask, _ := range insertedTaskName2IDMap {
+      for insertedTask, _ := range insertedGroup2TaskName2IDMap[t.Group] {
           if up == insertedTask {
             canInsert = true
             break
@@ -146,13 +147,13 @@ func tasksInsert(
       insertingTaskBatch = append(insertingTaskBatch, t)
       insertingTaskIndex = append(insertingTaskIndex, index)
     } else {
-      taskInsert(insertingTaskBatch, insertingTaskIndex, insertedTaskName2IDMap, ups)
+      taskInsert(insertingTaskBatch, insertingTaskIndex, insertedGroup2TaskName2IDMap, ups)
       insertingTaskBatch = []model.Task{t}
       insertingTaskIndex = []int{index}
     }
   }
   if len(insertingTaskBatch) != 0 {
-    taskInsert(insertingTaskBatch, insertingTaskIndex, insertedTaskName2IDMap, ups)
+    taskInsert(insertingTaskBatch, insertingTaskIndex, insertedGroup2TaskName2IDMap, ups)
   }
 }
 
@@ -160,16 +161,19 @@ func tasksInsert(
 func taskInsert(
   insertingTaskBatch []model.Task,
   insertingTaskIndex []int,
-  insertedTaskName2IDMap (map[string]uint),
+  insertedGroup2TaskName2IDMap map[string](map[string]uint),
   ups []([]string),
 ) {
   db.DataBase.Debug().Create(insertingTaskBatch)
   insertingLinks := []model.TaskLink{}
   for index, it := range insertingTaskBatch {
-    insertedTaskName2IDMap[it.Name] = it.ID
+    if insertedGroup2TaskName2IDMap[it.Group] == nil {
+      insertedGroup2TaskName2IDMap[it.Group] = map[string]uint{}
+    }
+    insertedGroup2TaskName2IDMap[it.Group][it.Name] = it.ID
     for _, up := range ups[insertingTaskIndex[index]] {
       insertingLinks = append(insertingLinks, model.TaskLink{
-        UpId: insertedTaskName2IDMap[up],
+        UpId: insertedGroup2TaskName2IDMap[it.Group][up],
         DownId: it.ID,
       })
     }

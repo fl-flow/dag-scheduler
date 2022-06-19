@@ -64,3 +64,15 @@ func (c TaskUpTasks) Value() (driver.Value, error) {
 func (c *TaskUpTasks) Scan(src any) error {
 	return json.Unmarshal(([]byte)(src.(string)), c)
 }
+
+
+type TaskDag 	dagparser.TaskParsered
+
+func (c TaskDag) Value() (driver.Value, error) {
+	b, err := json.Marshal(c)
+	return string(b), err
+}
+
+func (c *TaskDag) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
+}

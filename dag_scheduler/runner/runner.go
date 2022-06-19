@@ -10,8 +10,7 @@ import (
 )
 
 // TODO: it is a test
-func Run(cmd string, args... string) ([]string, string, bool) {
-  fmt.Println(cmd, args)
+func Run(cmd string, args []string) ([]string, string, bool) {
   process := exec.Command(cmd)
   stdin, _ := process.StdinPipe()
   stdout, _ := process.StdoutPipe()
@@ -27,7 +26,6 @@ func Run(cmd string, args... string) ([]string, string, bool) {
     return rets, fmt.Sprintf("%v", e), false
   }
   wait.Wait()
-  fmt.Println(rets)
   return rets, "success", true
 }
 

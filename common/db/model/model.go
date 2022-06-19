@@ -35,6 +35,7 @@ type Task struct {
   Description     string
   Pid             int
   OrderInJob      int
+  Dag             TaskDag       `gorm:"type:json"`
   UpTasks         []Task        `gorm:"many2many:TaskLink;joinForeignKey:DownId;joinReferences:UpId"`
   DownTasks       []Task        `gorm:"many2many:TaskLink;joinForeignKey:UpId;joinReferences:DownId"`
   MemoryLimited   uint64

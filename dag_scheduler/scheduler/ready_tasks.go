@@ -1,12 +1,13 @@
 package scheduler
 
 import (
-  "fmt"
   "log"
+  "encoding/json"
 
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/runner"
+  "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
 )
 
 
@@ -14,18 +15,20 @@ func ReadyTasks() {
   defer wait.Done()
   ActionLoop(
     db.DataBase.Where(
-      "tasks.status = ? AND (up_tasks.status = ? OR up_tasks.status is NULL )",
+      "tasks.status = ?",
       model.TaskReady,
-      model.TaskSuccess,
-    ).Joins(
-      "left join task_links on tasks.id = task_links.down_id",
-    ).Joins("left join tasks as up_tasks on up_tasks.id = task_links.up_id"),
+    ).Preload("UpTasks"),
     readyTaskOne,
   )
 }
 
 
 func readyTaskOne(t model.Task) bool {
+  for _, upTask := range t.UpTasks {
+    if upTask.Status != model.TaskSuccess {
+      return false
+    }
+  }
   // TODO: run controller switch
   log.Println("got ready task: id-", t.ID)
   go RunReadyTask(t)
@@ -34,18 +37,29 @@ func readyTaskOne(t model.Task) bool {
 
 
 func RunReadyTask(t model.Task) {
-  ret := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
+  qs := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
     "status = ?", model.TaskReady,
-  ).Updates(model.Task{
+  )
+
+  inputs, error := tracker.GetInput(t)
+  if error != nil {
+    b, _ := json.Marshal(error.Message())
+    qs.Updates(model.Task{
+      Status: model.TaskFailed,
+      CmdRet: string(b),
+    })
+    return
+  }
+
+  ret := qs.Updates(model.Task{
     Status: model.TaskRunning,
   })
   // status is changed
   if ret.RowsAffected == 0 {
     return
   }
-  // TODO: get args
-  rets, description, ok := runner.Run(t.Cmd, "ASDASD", "DDD")
-  fmt.Println(rets, description, ok)
+
+  rets, description, ok := runner.Run(t.Cmd, inputs)
 
   // unlock pre-distributed memory
   MemoryRwMutex.Lock()
@@ -53,20 +67,33 @@ func RunReadyTask(t model.Task) {
   MemoryRwMutex.Unlock()
 
   // update task status -> success or failed
-  qs := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
-    "status = ?", model.TaskRunning,
-  )
   if !ok {
-    qs.Updates(model.Task{
-      Status: model.TaskFailed,
+    db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
+      "status = ?", model.TaskRunning,
+    ).Updates(model.Task{
+      // Status: model.TaskFailed,
+      Status: model.TaskReady,
       CmdRet: description,
     })
     return
   }
-  qs.Updates(model.Task{
+
+  tx := db.DataBase.Begin()
+  defer tx.Commit()
+  e := tracker.SaveOutput(t, rets)
+  qs_ := tx.Debug().Model(&model.Task{ID: t.ID}).Where(
+    "status = ?", model.TaskRunning,
+  )
+  if e != nil {
+    bt, _ := json.Marshal(e.Message())
+    qs_.Updates(model.Task{
+      Status: model.TaskFailed,
+      CmdRet: string(bt),
+    })
+    return
+  }
+  qs_.Updates(model.Task{
     Status: model.TaskSuccess,
     CmdRet: description,
   })
-
-  // TODO: save rets
 }
