@@ -2,7 +2,7 @@ package parameterparser
 
 
 type Resource struct {
-  Memory    int64   `json:"memory"`
+  Memory    uint64   `json:"memory"`
 }
 
 

@@ -37,7 +37,7 @@ type Task struct {
   OrderInJob      int
   UpTasks         []Task        `gorm:"many2many:TaskLink;joinForeignKey:DownId;joinReferences:UpId"`
   DownTasks       []Task        `gorm:"many2many:TaskLink;joinForeignKey:UpId;joinReferences:DownId"`
-  MemoryLimited   int64
+  MemoryLimited   uint64
   Cmd             string
   ValidateCmd     string
   CmdRet          string

@@ -23,7 +23,7 @@ func CreateJob(data interface{}) (model.Job, *error.Error) {
   if err != nil {
     log.Fatalf("data json dumps error:  %v\n", err)
   }
-  body, e := fetch("POST", "/v1/job/", b)
+  body, e := fetch("POST", "/api/v1/job/", b)
   var job model.Job
   if e != nil {
     return job, e
@@ -39,7 +39,7 @@ func CreateJob(data interface{}) (model.Job, *error.Error) {
 
 func ListJob(size int, page int) ([]model.Job, *error.Error) {
   var jobs []model.Job
-  body, e := fetch("GET", "/v1/job/", []byte(`{}`))
+  body, e := fetch("GET", "/api/v1/job/", []byte(`{}`))
   if e != nil {
     return jobs, e
   }
