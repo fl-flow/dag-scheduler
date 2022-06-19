@@ -17,9 +17,12 @@ func Run() {
 
 	ginApp.Use(middleware.AuthMiddleware)
 
-	ginApp.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	if etc.IsRunHttpApi {
+		// API for customer
+		ginApp.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	v1.RegisterRouter(ginApp.Group("api/v1"))
-	
+		v1.RegisterRouter(ginApp.Group("api/v1"))
+	}
+
 	ginApp.Run(fmt.Sprintf("%v:%d", etc.SchedulerIp, etc.SchedulerPort))
 }
