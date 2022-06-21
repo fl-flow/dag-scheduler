@@ -59,11 +59,16 @@ func RunReadyTask(t model.Task) {
     return
   }
 
-  rets, description, ok := runner.Run(t.Cmd, inputs)
+  rets, description, ok := runner.Run(
+    []string(t.Dag.Cmd),
+    t.CommonParameter,
+    t.Parameters,
+    inputs,
+  )
 
   // unlock pre-distributed memory
   MemoryRwMutex.Lock()
-  LockedMemory = LockedMemory - t.MemoryLimited
+  LockedMemory = LockedMemory - t.Parameters.Setting.Resource.Memory
   MemoryRwMutex.Unlock()
 
   // update task status -> success or failed
@@ -71,8 +76,7 @@ func RunReadyTask(t model.Task) {
     db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
       "status = ?", model.TaskRunning,
     ).Updates(model.Task{
-      // Status: model.TaskFailed,
-      Status: model.TaskReady,
+      Status: model.TaskFailed,
       CmdRet: description,
     })
     return

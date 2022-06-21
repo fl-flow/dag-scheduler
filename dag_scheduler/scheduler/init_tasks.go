@@ -15,7 +15,8 @@ func InitTasks() {
 
 
 func initTaskOne(t model.Task) bool {
-  if t.MemoryLimited < (TotalMemory - LockedMemory) {
+  mem := t.Parameters.Setting.Resource.Memory
+  if mem < (TotalMemory - LockedMemory) {
     MemoryRwMutex.Lock()
     defer MemoryRwMutex.Unlock()
     ret := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where("status = ?", model.TaskInit).Updates(model.Task{Status: model.TaskReady})
@@ -23,7 +24,7 @@ func initTaskOne(t model.Task) bool {
       return false
     }
     log.Println("task init -> ready: id-", t.ID)
-    LockedMemory = LockedMemory + t.MemoryLimited
+    LockedMemory = LockedMemory + mem
     return false
   } else {
     return true

@@ -40,9 +40,12 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
     tasks, ups = mergeTasks(tasks, ups, orderedTasks, group)
   }
   for index, task := range tasks {
+    groupParameter := parameterMap[task.Group]
     tasks[index].Job = job
     tasks[index].OrderInJob = index
-    tasks[index].MemoryLimited = parameterMap[task.Group].Tasks[task.Name].Setting.Resource.Memory
+    // tasks[index].MemoryLimited = groupParameter.Tasks[task.Name].Setting.Resource.Memory
+    tasks[index].Parameters = model.TaskParameter(groupParameter.Tasks[task.Name])
+    tasks[index].CommonParameter = groupParameter.Common
   }
   // db.DataBase.Create(&tasks)
   tasksInsert(tasks, ups)
@@ -73,8 +76,8 @@ func mergeTasks(
       Status: model.TaskInit,
       // UpTasks: ups,
       Dag: model.TaskDag(lt),
-      Cmd: lt.Cmd,
-      ValidateCmd: lt.ValidateCmd,
+      // Cmd: lt.Cmd,
+      // ValidateCmd: lt.ValidateCmd,
     }
     for index, ft := range fTasks {
       if has {

@@ -11,8 +11,6 @@ import(
 
 
 func GetInput(t model.Task) ([]string, *error.Error) {
-  fmt.Println(t.ID, t.UpTasks, "asdasd")
-  fmt.Println(t.Dag, "4545asdasd")
   var input []string
   var upTaskIds []uint
   for _, upTask := range t.UpTasks {
@@ -23,13 +21,9 @@ func GetInput(t model.Task) ([]string, *error.Error) {
     for _, up := range t.Dag.Depandent.Up {
       tagQuerys = append(tagQuerys, fmt.Sprintf(`tag = "%v"`, up.Tag))
     }
-
     tagQuery := strings.Join(tagQuerys, "OR")
-
     var upTaskOutputs []model.TaskResult
     db.DataBase.Debug().Where("task_id IN ?", upTaskIds).Where(tagQuery).Find(&upTaskOutputs)
-    fmt.Println(upTaskOutputs, "zzzzz")
-
     for _, up := range t.Dag.Depandent.Up {
       for _, upTaskOutput := range upTaskOutputs {
         if up.Tag == upTaskOutput.Tag {

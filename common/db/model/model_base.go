@@ -18,6 +18,18 @@ func getReverseMap(m map[int]string) map[string]int {
 }
 
 
+type CmdType	[]string
+
+func (c CmdType) Value() (driver.Value, error) {
+	b, err := json.Marshal(c)
+	return string(b), err
+}
+
+func (c *CmdType) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
+}
+
+
 type JobDag 				map[string](*([]dagparser.TaskParsered))
 
 func (c JobDag) Value() (driver.Value, error) {
@@ -74,5 +86,17 @@ func (c TaskDag) Value() (driver.Value, error) {
 }
 
 func (c *TaskDag) Scan(src any) error {
+	return json.Unmarshal(([]byte)(src.(string)), c)
+}
+
+
+type TaskParameter parameterparser.TaskParameter
+
+func (c TaskParameter) Value() (driver.Value, error) {
+	b, err := json.Marshal(c)
+	return string(b), err
+}
+
+func (c *TaskParameter) Scan(src any) error {
 	return json.Unmarshal(([]byte)(src.(string)), c)
 }

@@ -4,7 +4,7 @@ package dagparser
 type DagTask struct {
   Input       []string  `json:"input"`
   Output      []string  `json:"output"`
-  Cmd         string    `json:"cmd"`
+  Cmd         []string    `json:"cmd"`
   ValidateCmd string    `json:"validate_cmd"`
 }
 
@@ -25,6 +25,6 @@ type TaskParsered struct {
   Name          string
   Depandent     TaskDepandent
   Output        []string
-  Cmd           string
+  Cmd           []string
   ValidateCmd   string
 }

@@ -36,11 +36,13 @@ type Task struct {
   Pid             int
   OrderInJob      int
   Dag             TaskDag       `gorm:"type:json"`
+  Parameters      TaskParameter `gorm:"type:json"`
+  CommonParameter string
   UpTasks         []Task        `gorm:"many2many:TaskLink;joinForeignKey:DownId;joinReferences:UpId"`
   DownTasks       []Task        `gorm:"many2many:TaskLink;joinForeignKey:UpId;joinReferences:DownId"`
-  MemoryLimited   uint64
-  Cmd             string
-  ValidateCmd     string
+  // MemoryLimited   uint64
+  // Cmd             CmdType       `gorm:"type:json"`
+  // ValidateCmd     string
   CmdRet          string
 }
 

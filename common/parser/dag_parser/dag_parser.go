@@ -56,7 +56,7 @@ func findTasksDepandent(
 
   // build depandents
   for taskName, taskInfo := range dagTaskMap {
-    if taskInfo.Cmd == "" {
+    if len(taskInfo.Cmd) == 0 {
       return tasksDepandentMap, inDegreeMap, &error.Error{
           Code: 11040,
           Hits: taskName,
