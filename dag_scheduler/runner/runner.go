@@ -5,6 +5,7 @@ import (
   "fmt"
   "sync"
   "bufio"
+  "strconv"
   "os/exec"
   "encoding/json"
   "encoding/base64"
@@ -16,6 +17,7 @@ func Run(
   commonParameters string,
   parameters interface{},
   inputs []string,
+  outputLength int,
 ) ([]string, string, bool) {
   var process *exec.Cmd
   if len(cmd) == 1 {
@@ -29,7 +31,7 @@ func Run(
   wait := &sync.WaitGroup{}
   wait.Add(1)
   var rets []string
-  go inputArgs(stdin, commonParameters, parameters, inputs)
+  go inputArgs(stdin, commonParameters, parameters, inputs, outputLength)
   go getRet(stdout, &rets, wait)
   process.Start()
   errorBytes, _ := io.ReadAll(stderror)
@@ -51,10 +53,13 @@ func inputArgs(
   commonParameters string,
   parameters interface {},
   inputs []string,
+  outputLength int,
 ) {
   write2Pipe(w, commonParameters)
   parametersBytes, _ := json.Marshal(parameters)
   write2Pipe(w, string(parametersBytes))
+  write2Pipe(w, strconv.Itoa(len(inputs)))
+  write2Pipe(w, strconv.Itoa(outputLength))
   for _, i := range inputs {
     write2Pipe(w, i)
   }

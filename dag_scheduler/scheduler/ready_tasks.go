@@ -64,6 +64,7 @@ func RunReadyTask(t model.Task) {
     t.CommonParameter,
     t.Parameters,
     inputs,
+    len(t.Dag.Output),
   )
 
   // unlock pre-distributed memory
