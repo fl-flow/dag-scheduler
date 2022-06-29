@@ -60,6 +60,10 @@ func RunReadyTask(t model.Task) {
   }
 
   rets, description, ok := runner.Run(
+    t.ID,
+    t.JobID,
+    t.Name,
+    t.Group,
     []string(t.Dag.Cmd),
     t.CommonParameter,
     t.Parameters,

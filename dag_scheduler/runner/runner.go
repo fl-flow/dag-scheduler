@@ -13,6 +13,10 @@ import (
 
 
 func Run(
+  taskID uint,
+  jobID uint,
+  taskName string,
+  group string,
   cmd []string,
   commonParameters string,
   parameters interface{},
@@ -31,7 +35,17 @@ func Run(
   wait := &sync.WaitGroup{}
   wait.Add(1)
   var rets []string
-  go inputArgs(stdin, commonParameters, parameters, inputs, outputLength)
+  go inputArgs(
+    stdin,
+    taskID,
+    jobID,
+    taskName,
+    group,
+    commonParameters,
+    parameters,
+    inputs,
+    outputLength,
+  )
   go getRet(stdout, &rets, wait)
   process.Start()
   errorBytes, _ := io.ReadAll(stderror)
@@ -50,11 +64,22 @@ func Run(
 
 func inputArgs(
   w io.Writer,
+  taskID uint,
+  jobID uint,
+  taskName string,
+  group string,
   commonParameters string,
   parameters interface {},
   inputs []string,
   outputLength int,
 ) {
+  taskInfo, _ := json.Marshal(map[string]string{
+    "job_id": strconv.Itoa(int(jobID)),
+    "task_id": strconv.Itoa(int(taskID)),
+    "group": group,
+    "task_name": taskName,
+  })
+  write2Pipe(w, string(taskInfo))
   write2Pipe(w, commonParameters)
   parametersBytes, _ := json.Marshal(parameters)
   write2Pipe(w, string(parametersBytes))
@@ -62,6 +87,7 @@ func inputArgs(
   write2Pipe(w, strconv.Itoa(outputLength))
   for _, i := range inputs {
     write2Pipe(w, i)
+    write2Pipe(w, "annotation") // TODO:
   }
 }
 
