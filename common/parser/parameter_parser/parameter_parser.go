@@ -5,6 +5,6 @@ import (
 )
 
 
-func Parse(parameter Parameter) (Parameter, *error.Error){
+func (parameter Parameter) Parse () (Parameter, *error.Error) {
   return parameter, nil
 }

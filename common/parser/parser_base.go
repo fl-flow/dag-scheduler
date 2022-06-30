@@ -6,9 +6,17 @@ import (
 )
 
 
-type GroupConf map[string](dagparser.DagTask)
+// raw
+type Role2DagTaskMap map[string]dagparser.DagTaskMap
+
+type Role2Parameter map[string]parameterparser.Parameter
+
 
 type Conf struct {
-  Dag         map[string]GroupConf                    `json:"dag"`
-  Parameter   map[string]parameterparser.Parameter    `json:"parameter"`
+  Dag         Role2DagTaskMap         `json:"dag"`
+  Parameter   Role2Parameter          `json:"parameter"`
 }
+
+
+// parsered
+type Role2TaskParseredList map[string](*dagparser.TaskParseredList)

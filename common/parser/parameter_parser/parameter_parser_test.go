@@ -14,7 +14,7 @@ func testParse(rawParameter string) (Parameter, *error.Error){
   if ok != nil {
     return parameter, &error.Error{Code: 12000}
   }
-  parameter1, ok1 := Parse(parameter)
+  parameter1, ok1 := parameter.Parse()
   if ok1 != nil {
     return parameter, ok1
   }

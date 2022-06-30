@@ -9,13 +9,13 @@ import(
 
 
 func testParse(dag string) ([]TaskParsered, *error.Error) {
-  var dagMap map[string]DagTask
+  var dagMap DagTaskMap
   ok := json.Unmarshal([]byte(dag), &dagMap)
   var tasksParsed []TaskParsered
   if ok != nil {
     return tasksParsed, &error.Error{Code: 11000}
   }
-  tasksParsed, e := Parse(dagMap)
+  tasksParsed, e := dagMap.Parse()
   if e != nil {
     return tasksParsed, e
   }

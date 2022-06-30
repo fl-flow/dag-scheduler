@@ -7,48 +7,33 @@ import(
 )
 
 
-func Parse(dagMap map[string]DagTask) ([]TaskParsered, *error.Error) {
-  var tasksParsed []TaskParsered
-  tasksDepandentMap, inDegreeMap, error := findTasksDepandent(dagMap)
+func (dagMap DagTaskMap) Parse () (TaskParseredList, *error.Error ){
+  var tasksParsed TaskParseredList
+  tasksDepandentMap, inDegreeMap, error := dagMap.findTasksDepandent()
   if error != nil {
     return tasksParsed, error
   }
-  orderedTasks, loopE := checkLoop(inDegreeMap, tasksDepandentMap)
+  orderedTasks, loopE := tasksDepandentMap.checkLoop(inDegreeMap)
   if loopE != nil {
     return tasksParsed, loopE
   }
   tasksParsed = buildTaskParsered(
-      orderedTasks,
-      tasksDepandentMap,
-      dagMap,
+    tasksDepandentMap,
+    orderedTasks,
+    dagMap,
   )
   return tasksParsed, nil
 }
 
 
-func parseTaskDepandent(value string) (string, string, *error.Error) {
-  // task.tag
-  rets := strings.Split(value, ".")
-  if (len(rets) != 2){
-    return "", "", &error.Error{
-        Code: 11010,
-        Hits: value,
-        // Msg: fmt.Sprintf(
-        //     "error dagparser (%v ; required task.tag; task and tag can't contain '.')",
-        //     value,
-        // ),
-    }
-  }
-  return rets[0], rets[1], nil
-}
-
-
-func findTasksDepandent(
-  dagTaskMap map[string]DagTask) (
-  map[string]*TaskDepandent, map[string]int, *error.Error) {
+func (dagTaskMap DagTaskMap) findTasksDepandent() (
+  TasksDepandentMap,
+  map[string]int,
+  *error.Error,
+) {
 
   // get all tasks
-  tasksDepandentMap := make(map[string]*TaskDepandent)
+  tasksDepandentMap := make(TasksDepandentMap)
   inDegreeMap := make(map[string]int)
   for taskName, _ := range dagTaskMap {
     tasksDepandentMap[taskName] = &TaskDepandent{}
@@ -77,11 +62,6 @@ func findTasksDepandent(
                 inputItem,
                 upTaskName,
             ),
-            // Msg: fmt.Sprintf(
-            //     "parser error( %v; task %v not exits )",
-            //     inputItem,
-            //     upTaskName,
-            // ),
         }
       }
       tasksDepandentMap[taskName].Up = append(
@@ -100,7 +80,21 @@ func findTasksDepandent(
 }
 
 
-func checkLoop(inDegreeMap map[string]int, tasksDepandentMap map[string]*TaskDepandent) ([]string, *error.Error) {
+
+func parseTaskDepandent(value string) (string, string, *error.Error) {
+  // task.tag
+  rets := strings.Split(value, ".")
+  if (len(rets) != 2){
+    return "", "", &error.Error{
+        Code: 11010,
+        Hits: value,
+    }
+  }
+  return rets[0], rets[1], nil
+}
+
+
+func (tasksDepandentMap TasksDepandentMap) checkLoop(inDegreeMap map[string]int) ([]string, *error.Error) {
   var queue, orderedTasks []string
   for taskName, inDegree := range inDegreeMap {
     if (inDegree == 0) {
@@ -135,11 +129,11 @@ func checkLoop(inDegreeMap map[string]int, tasksDepandentMap map[string]*TaskDep
 
 
 func buildTaskParsered(
-    orderedTasks []string,
-    tasksDepandentMap map[string]*TaskDepandent,
-    dagTaskMap map[string]DagTask,
-) []TaskParsered {
-    var tasksParsed []TaskParsered
+  tasksDepandentMap TasksDepandentMap,
+  orderedTasks []string,
+  dagTaskMap map[string]DagTask,
+) TaskParseredList {
+    var tasksParsed TaskParseredList
     for _, taskName := range orderedTasks {
       tasksParsed = append(
         tasksParsed,

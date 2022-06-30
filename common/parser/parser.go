@@ -8,12 +8,11 @@ import (
 )
 
 
-func Parse(conf Conf) (map[string](*([]dagparser.TaskParsered)), map[string](parameterparser.Parameter), *error.Error){
-  // var tasks []dagparser.TaskParsered
-  var allTasksMap = make(map[string](*([]dagparser.TaskParsered)))
-  var allParametersMap = make(map[string](parameterparser.Parameter))
+func (conf Conf) Parse() (Role2TaskParseredList, Role2Parameter, *error.Error){
+  var allTasksMap = make(Role2TaskParseredList)
+  var allParametersMap = make(Role2Parameter)
   for group, groupConf := range conf.Dag {
-    tasks, dagerror := dagparser.Parse(groupConf)
+    tasks, dagerror := groupConf.Parse()
     if dagerror != nil {
       return allTasksMap, allParametersMap, dagerror
     }
@@ -21,7 +20,7 @@ func Parse(conf Conf) (map[string](*([]dagparser.TaskParsered)), map[string](par
   }
 
   for group, groupParameter := range conf.Parameter{
-    parameters, parameterError := parameterparser.Parse(groupParameter)
+    parameters, parameterError := groupParameter.Parse()
     if parameterError != nil {
       return allTasksMap, allParametersMap, parameterError
     }
@@ -36,8 +35,9 @@ func Parse(conf Conf) (map[string](*([]dagparser.TaskParsered)), map[string](par
 
 
 func checkDagParameter(
-  taskMap map[string](*([]dagparser.TaskParsered)),
-  parameterMap map[string](parameterparser.Parameter)) *error.Error {
+  taskMap Role2TaskParseredList,
+  parameterMap Role2Parameter,
+) *error.Error {
   for group, tasks := range taskMap {
     p, ok := parameterMap[group]
     if !ok {
@@ -56,7 +56,7 @@ func checkDagParameter(
 
 
 func checkOneceDagParameter(
-  tasks []dagparser.TaskParsered,
+  tasks dagparser.TaskParseredList,
   parameters parameterparser.Parameter) *error.Error {
   if len(tasks) != len(parameters.Tasks) {
     return &error.Error{Code: 12010}

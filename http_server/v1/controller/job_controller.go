@@ -12,7 +12,7 @@ import (
 func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
   // parse conf
   var job model.Job
-  orderedTasksMap, parameterMap, e := parser.Parse(conf)
+  orderedTasksMap, parameterMap, e := conf.Parse()
   if e != nil {
     return job, e
   }
@@ -27,8 +27,8 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
   // insert job
   job = model.Job {
     Name: name,
-    Dag: orderedTasksMap,
-    RawDag: conf.Dag,
+    Dag: model.JobDag(orderedTasksMap),
+    RawDag: model.JobRawDagmap(conf.Dag),
     Parameter: model.JobParameter(parameterMap),
     Status: model.JobInit,
   }
@@ -58,7 +58,7 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
 func mergeTasks(
   fTasks []model.Task,
   fUps []([]string),
-  lTasks *[]dagparser.TaskParsered,
+  lTasks *dagparser.TaskParseredList,
   group string,
 ) ([]model.Task, []([]string)) {
   anchor := 0

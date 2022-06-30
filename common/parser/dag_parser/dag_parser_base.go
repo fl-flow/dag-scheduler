@@ -1,12 +1,17 @@
 package dagparser
 
 
+// raw
 type DagTask struct {
   Input       []string  `json:"input"`
   Output      []string  `json:"output"`
-  Cmd         []string    `json:"cmd"`
+  Cmd         []string   `json:"cmd"`
   ValidateCmd string    `json:"validate_cmd"`
 }
+
+
+// parsered
+type DagTaskMap map[string]DagTask
 
 
 type TaskInput struct {
@@ -20,6 +25,7 @@ type TaskDepandent struct {
   Down        []string
 }
 
+type TasksDepandentMap map[string]*TaskDepandent
 
 type TaskParsered struct {
   Name          string
@@ -28,3 +34,5 @@ type TaskParsered struct {
   Cmd           []string
   ValidateCmd   string
 }
+
+type TaskParseredList []TaskParsered

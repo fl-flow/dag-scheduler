@@ -30,7 +30,7 @@ func (c *CmdType) Scan(src any) error {
 }
 
 
-type JobDag 				map[string](*([]dagparser.TaskParsered))
+type JobDag parser.Role2TaskParseredList
 
 func (c JobDag) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
@@ -42,7 +42,7 @@ func (c *JobDag) Scan(src any) error {
 }
 
 
-type JobRawDagmap   map[string](parser.GroupConf)
+type JobRawDagmap   parser.Role2DagTaskMap
 
 func (c JobRawDagmap) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
@@ -54,7 +54,7 @@ func (c *JobRawDagmap) Scan(src any) error {
 }
 
 
-type JobParameter   map[string]parameterparser.Parameter
+type JobParameter   parser.Role2Parameter
 
 func (c JobParameter) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
