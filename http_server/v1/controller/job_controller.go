@@ -168,20 +168,29 @@ func taskInsert(
   ups []([]string),
 ) {
   db.DataBase.Debug().Create(insertingTaskBatch)
-  insertingLinks := []model.TaskLink{}
+  // insertingLinks := []model.TaskLink{}
+  up2DownMap := make(map[uint]uint)
   for index, it := range insertingTaskBatch {
     if insertedGroup2TaskName2IDMap[it.Group] == nil {
       insertedGroup2TaskName2IDMap[it.Group] = map[string]uint{}
     }
     insertedGroup2TaskName2IDMap[it.Group][it.Name] = it.ID
     for _, up := range ups[insertingTaskIndex[index]] {
-      insertingLinks = append(insertingLinks, model.TaskLink{
-        UpId: insertedGroup2TaskName2IDMap[it.Group][up],
-        DownId: it.ID,
-      })
+      up2DownMap[insertedGroup2TaskName2IDMap[it.Group][up]] = it.ID
+      // insertingLinks = append(insertingLinks, model.TaskLink{
+      //   UpId: insertedGroup2TaskName2IDMap[it.Group][up],
+      //   DownId: it.ID,
+      // })
     }
   }
-  if len(insertingLinks) != 0 {
+  if len(up2DownMap) != 0 {
+    insertingLinks := []model.TaskLink{}
+    for upID, downID := range up2DownMap {
+      insertingLinks = append(insertingLinks, model.TaskLink{
+        UpId: upID,
+        DownId: downID,
+      })
+    }
     db.DataBase.Debug().Create(&insertingLinks)
   }
 }

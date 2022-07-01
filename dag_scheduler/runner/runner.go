@@ -9,6 +9,8 @@ import (
   "os/exec"
   "encoding/json"
   "encoding/base64"
+
+  "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
 )
 
 
@@ -20,7 +22,7 @@ func Run(
   cmd []string,
   commonParameters string,
   parameters interface{},
-  inputs []string,
+  inputs []tracker.Input,
   outputLength int,
 ) ([]string, string, bool) {
   var process *exec.Cmd
@@ -70,7 +72,7 @@ func inputArgs(
   group string,
   commonParameters string,
   parameters interface {},
-  inputs []string,
+  inputs []tracker.Input,
   outputLength int,
 ) {
   taskInfo, _ := json.Marshal(map[string]string{
@@ -86,8 +88,8 @@ func inputArgs(
   write2Pipe(w, strconv.Itoa(len(inputs)))
   write2Pipe(w, strconv.Itoa(outputLength))
   for _, i := range inputs {
-    write2Pipe(w, i)
-    write2Pipe(w, "annotation") // TODO:
+    input, _ := json.Marshal(i)
+    write2Pipe(w, string(input))
   }
 }
 

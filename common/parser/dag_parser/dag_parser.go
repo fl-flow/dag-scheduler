@@ -49,7 +49,7 @@ func (dagTaskMap DagTaskMap) findTasksDepandent() (
     }
     input := taskInfo.Input
     for _, inputItem := range input {
-      upTaskName, upTag, e := parseTaskDepandent(inputItem)
+      upTaskName, upTag, annotation, e := parseTaskDepandent(inputItem)
       if e != nil {
         return tasksDepandentMap, inDegreeMap, e
       }
@@ -69,6 +69,7 @@ func (dagTaskMap DagTaskMap) findTasksDepandent() (
         TaskInput {
           UpTask: upTaskName,
           Tag: upTag,
+          Annotation: annotation,
         })
       tasksDepandentMap[upTaskName].Down = append(tasksDepandentMap[upTaskName].Down, taskName)
     }
@@ -81,16 +82,20 @@ func (dagTaskMap DagTaskMap) findTasksDepandent() (
 
 
 
-func parseTaskDepandent(value string) (string, string, *error.Error) {
+func parseTaskDepandent(value string) (string, string, string, *error.Error) {
   // task.tag
-  rets := strings.Split(value, ".")
+  rets := strings.SplitN(value, ".", 2)
   if (len(rets) != 2){
-    return "", "", &error.Error{
+    return "", "", "", &error.Error{
         Code: 11010,
         Hits: value,
     }
   }
-  return rets[0], rets[1], nil
+  tagAnnotation := strings.SplitN(rets[1], ":", 2)
+  if len(tagAnnotation) != 2 {
+    return rets[0], rets[1], "", nil
+  }
+  return rets[0], tagAnnotation[0], tagAnnotation[1], nil
 }
 
 

@@ -58,5 +58,6 @@ type TaskResult struct {
   TaskId          uint
   Task            Task
   Tag             string
+  TaskName        string
   Ret             string
 }

@@ -17,6 +17,7 @@ type DagTaskMap map[string]DagTask
 type TaskInput struct {
   UpTask        string
   Tag           string
+  Annotation    string
 }
 
 

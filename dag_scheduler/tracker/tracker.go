@@ -10,8 +10,14 @@ import(
 )
 
 
-func GetInput(t model.Task) ([]string, *error.Error) {
-  var input []string
+type Input struct {
+  Value       string    `json:"value"`
+  Annotation  string    `json:"annotation"`
+}
+
+
+func GetInput(t model.Task) ([]Input, *error.Error) {
+  var input []Input
   var upTaskIds []uint
   for _, upTask := range t.UpTasks {
     upTaskIds = append(upTaskIds, upTask.ID)
@@ -21,13 +27,19 @@ func GetInput(t model.Task) ([]string, *error.Error) {
     for _, up := range t.Dag.Depandent.Up {
       tagQuerys = append(tagQuerys, fmt.Sprintf(`tag = "%v"`, up.Tag))
     }
-    tagQuery := strings.Join(tagQuerys, "OR")
+    tagQuery := strings.Join(tagQuerys, " OR ")
     var upTaskOutputs []model.TaskResult
     db.DataBase.Debug().Where("task_id IN ?", upTaskIds).Where(tagQuery).Find(&upTaskOutputs)
     for _, up := range t.Dag.Depandent.Up {
       for _, upTaskOutput := range upTaskOutputs {
-        if up.Tag == upTaskOutput.Tag {
-          input = append(input, upTaskOutput.Ret)
+        if up.Tag == upTaskOutput.Tag && up.UpTask == upTaskOutput.TaskName {
+          input = append(
+            input,
+            Input{
+              Value: upTaskOutput.Ret,
+              Annotation: up.Annotation,
+            },
+          )
         }
       }
     }
@@ -70,6 +82,7 @@ func SaveOutput(t model.Task, output []string) *error.Error {
       Task: t,
       Tag: tag,
       Ret: output[index],
+      TaskName: t.Name,
     })
   }
   if len(insertingTaskOutputs) != 0 {
