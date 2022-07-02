@@ -5,6 +5,11 @@ init docs
 swag init
 ```
 
+run test
+```bash
+go test ./...
+```
+
 
 run for dev
 ```bash
