@@ -79,7 +79,7 @@ func SaveOutput(t model.Task, output []string) *error.Error {
   var insertingTaskOutputs []model.TaskResult
   for index, tag := range t.Dag.Output {
     insertingTaskOutputs = append(insertingTaskOutputs, model.TaskResult{
-      Task: t,
+      TaskId: t.ID,
       Tag: tag,
       Ret: output[index],
       TaskName: t.Name,

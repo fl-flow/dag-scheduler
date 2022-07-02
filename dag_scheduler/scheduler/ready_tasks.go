@@ -56,13 +56,24 @@ func RunReadyTask(t model.Task) {
     return
   }
 
-  ret := qs.Updates(model.Task{
+  toRunTx := db.DataBase.Begin()
+
+  ret := toRunTx.Model(&model.Task{ID: t.ID}).Where(
+    "status = ?", model.TaskReady,
+  ).Updates(model.Task{
     Status: model.TaskRunning,
   })
   // status is changed
   if ret.RowsAffected == 0 {
+    toRunTx.Rollback()
     return
   }
+  if t.OrderInJob == 0 {
+    toRunTx.Model(&model.Job{ID: t.JobID}).Updates(
+      model.Job{Status: model.JobRunning},
+    )
+  }
+  toRunTx.Commit()
   NotifyTask(
     ret,
     t,

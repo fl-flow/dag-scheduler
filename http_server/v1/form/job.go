@@ -9,5 +9,6 @@ type JobCreateForm struct {
   parser.Conf
   Name          string                `json:"name" binding:"required"`
   NotifyUrl     string                `json:"notify_url"`
+  JobNotifyUrl  string                `json:"job_notify_url"`
   ID            uint                  `json:"id"`
 }

@@ -14,8 +14,15 @@ func JobCreate(
   f form.JobCreateForm,
   conf parser.Conf,
 ) (model.Job, *error.Error) {
+  var jobNotifyUrl string
   name := f.Name
   notifyUrl := f.NotifyUrl
+  if f.JobNotifyUrl != "" {
+    jobNotifyUrl = f.JobNotifyUrl
+  } else {
+    jobNotifyUrl = notifyUrl
+  }
+
   // TODO: validate notifyUrl
 
   // parse conf
@@ -39,7 +46,7 @@ func JobCreate(
     RawDag: model.JobRawDagmap(conf.Dag),
     Parameter: model.JobParameter(parameterMap),
     Status: model.JobInit,
-    NotifyUrl: notifyUrl,
+    NotifyUrl: jobNotifyUrl,
     ID: f.ID,
   }
   tx := db.DataBase.Begin()
