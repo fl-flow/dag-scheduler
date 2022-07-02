@@ -6,7 +6,7 @@ import (
 
 
 type BaseModel struct {
-  ID        uint        `gorm:"primarykey"`
+  ID        uint        `gorm:"primarykey;type:bigint auto_increment"`
   CreatedAt time.Time   `gorm:"autoCreateTime"`
 	UpdatedAt time.Time   `gorm:"autoUpdateTime"`
 }
@@ -14,6 +14,7 @@ type BaseModel struct {
 
 type Job struct {
   BaseModel
+  ID              uint          `gorm:"primarykey;type:bigint auto_increment"`
   Status          JobStatus     `gorm:"type:int"`
   Name            string
   Description     string
@@ -21,13 +22,14 @@ type Job struct {
   RawDag          JobRawDagmap  `gorm:"type:json"`
   Parameter       JobParameter  `gorm:"type:json"`
   Tasks           []Task
+  NotifyUrl       string
 }
 
 
 type Task struct {
   BaseModel
-  ID              uint          `gorm:"primarykey"`
-  JobID           uint
+  ID              uint          `gorm:"primarykey;type:bigint auto_increment"`
+  JobID           uint          `gorm:"type:bigint"`
   Job             Job
   Group           string
   Status          TaskStatus    `gorm:"type:int"`
@@ -44,18 +46,19 @@ type Task struct {
   // Cmd             CmdType       `gorm:"type:json"`
   // ValidateCmd     string
   CmdRet          string
+  NotifyUrl       string
 }
 
 
 type TaskLink struct {
-	UpId           uint
-	DownId         uint
+	UpId           uint            `gorm:"type:bigint"`
+	DownId         uint            `gorm:"type:bigint"`
 }
 
 
 type TaskResult struct {
   BaseModel
-  TaskId          uint
+  TaskId          uint            `gorm:"type:bigint"`
   Task            Task
   Tag             string
   TaskName        string

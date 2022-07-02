@@ -5,11 +5,19 @@ import (
   "github.com/fl-flow/dag-scheduler/common/error"
   "github.com/fl-flow/dag-scheduler/common/parser"
   "github.com/fl-flow/dag-scheduler/common/db/model"
+  "github.com/fl-flow/dag-scheduler/http_server/v1/form"
   "github.com/fl-flow/dag-scheduler/common/parser/dag_parser"
 )
 
 
-func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
+func JobCreate(
+  f form.JobCreateForm,
+  conf parser.Conf,
+) (model.Job, *error.Error) {
+  name := f.Name
+  notifyUrl := f.NotifyUrl
+  // TODO: validate notifyUrl
+
   // parse conf
   var job model.Job
   orderedTasksMap, parameterMap, e := conf.Parse()
@@ -31,13 +39,15 @@ func JobCreate(name string, conf parser.Conf) (model.Job, *error.Error) {
     RawDag: model.JobRawDagmap(conf.Dag),
     Parameter: model.JobParameter(parameterMap),
     Status: model.JobInit,
+    NotifyUrl: notifyUrl,
+    ID: f.ID,
   }
   tx := db.DataBase.Begin()
   db.DataBase.Create(&job)
   var tasks []model.Task
   var ups []([]string)
   for group, orderedTasks := range orderedTasksMap {
-    tasks, ups = mergeTasks(tasks, ups, orderedTasks, group)
+    tasks, ups = mergeTasks(tasks, ups, orderedTasks, group, notifyUrl)
   }
   for index, task := range tasks {
     groupParameter := parameterMap[task.Group]
@@ -60,6 +70,7 @@ func mergeTasks(
   fUps []([]string),
   lTasks *dagparser.TaskParseredList,
   group string,
+  notifyUrl string,
 ) ([]model.Task, []([]string)) {
   anchor := 0
   for _, lt := range *lTasks {
@@ -74,6 +85,7 @@ func mergeTasks(
       // Pid: nil,
       Group: group,
       Status: model.TaskInit,
+      NotifyUrl: notifyUrl,
       // UpTasks: ups,
       Dag: model.TaskDag(lt),
       // Cmd: lt.Cmd,

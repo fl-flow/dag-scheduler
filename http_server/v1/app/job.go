@@ -26,7 +26,7 @@ func JobCreate(context *gin.Context) {
     return
 	}
   job, error := controller.JobCreate(
-    f.Name,
+    f,
     parser.Conf {
       Dag: f.Dag,
       Parameter: f.Parameter,

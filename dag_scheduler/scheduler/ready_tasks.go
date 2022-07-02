@@ -44,10 +44,15 @@ func RunReadyTask(t model.Task) {
   inputs, error := tracker.GetInput(t)
   if error != nil {
     b, _ := json.Marshal(error.Message())
-    qs.Updates(model.Task{
+    ret := qs.Updates(model.Task{
       Status: model.TaskFailed,
       CmdRet: string(b),
     })
+    NotifyTask(
+      ret,
+      t,
+      model.TaskFailed,
+    )
     return
   }
 
@@ -58,6 +63,11 @@ func RunReadyTask(t model.Task) {
   if ret.RowsAffected == 0 {
     return
   }
+  NotifyTask(
+    ret,
+    t,
+    model.TaskRunning,
+  )
 
   rets, description, ok := runner.Run(
     t.ID,
@@ -78,12 +88,17 @@ func RunReadyTask(t model.Task) {
 
   // update task status -> success or failed
   if !ok {
-    db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
+    ret := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where(
       "status = ?", model.TaskRunning,
     ).Updates(model.Task{
       Status: model.TaskFailed,
       CmdRet: description,
     })
+    NotifyTask(
+      ret,
+      t,
+      model.TaskFailed,
+    )
     return
   }
 
@@ -95,14 +110,24 @@ func RunReadyTask(t model.Task) {
   )
   if e != nil {
     bt, _ := json.Marshal(e.Message())
-    qs_.Updates(model.Task{
+    ret := qs_.Updates(model.Task{
       Status: model.TaskFailed,
       CmdRet: string(bt),
     })
+    NotifyTask(
+      ret,
+      t,
+      model.TaskFailed,
+    )
     return
   }
-  qs_.Updates(model.Task{
+  retSuccess := qs_.Updates(model.Task{
     Status: model.TaskSuccess,
     CmdRet: description,
   })
+  NotifyTask(
+    retSuccess,
+    t,
+    model.TaskSuccess,
+  )
 }

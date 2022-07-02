@@ -5,7 +5,8 @@ import (
   "sync"
   "time"
   "gorm.io/gorm"
-  
+
+  "github.com/fl-flow/dag-scheduler/util/notify"
   "github.com/fl-flow/dag-scheduler/common/db/model"
 )
 
@@ -64,4 +65,29 @@ func ActionLoop(qs *gorm.DB, doOneModel DoOneModel) {
       time.Sleep(time.Second *2)
     }
   }
+}
+
+
+func NotifyTask(ret *gorm.DB, t model.Task, status model.TaskStatus) {
+  if ret.RowsAffected == 0 {
+    return
+  }
+  if ret.RowsAffected != 1 {
+    log.Fatalf("error update with lock, bug")
+    return
+  }
+  if t.NotifyUrl == "" {
+    return
+  }
+  notify.NotifyStatus(
+    t.NotifyUrl,
+    int(status),
+    "task",
+    t.ID,
+    map[string]interface{}{
+      "job_id": t.JobID,
+      "group": t.Group,
+      "task": t.Name,
+    },
+  )
 }
