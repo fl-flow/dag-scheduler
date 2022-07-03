@@ -7,6 +7,7 @@ import (
   "bytes"
   "net/http"
 	"io/ioutil"
+  "encoding/json"
 
   "github.com/fl-flow/dag-scheduler/common/error"
 )
@@ -28,11 +29,16 @@ func fetch(method string, uri string, jsonData []byte) ([]byte, *error.Error) {
   defer response.Body.Close()
   body, _ := ioutil.ReadAll(response.Body)
   if response.StatusCode != 200 {
-    log.Println("request for '%s' status : %v\n body: %v\n", url, response.StatusCode, string(body))
+    log.Printf("request for '%s' status : %v\n body: %v\n", url, response.StatusCode, string(body))
     return body, &error.Error{
       Code: 80010,
       Hits: string(body),
     }
+  }
+  var ret Ret
+  err_ := json.Unmarshal(body, &ret)
+  if err_ != nil {
+    log.Fatalf("data json loads error:  %v\n", err_)
   }
   return body, nil
 }

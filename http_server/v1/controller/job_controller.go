@@ -54,7 +54,7 @@ func JobCreate(
   var tasks []model.Task
   var ups []([]string)
   for group, orderedTasks := range orderedTasksMap {
-    tasks, ups = mergeTasks(tasks, ups, orderedTasks, group, notifyUrl)
+    tasks, ups = mergeTasks(tasks, ups, orderedTasks, group, notifyUrl, f.WaitCmdToRun)
   }
   for index, task := range tasks {
     groupParameter := parameterMap[task.Group]
@@ -78,6 +78,7 @@ func mergeTasks(
   lTasks *dagparser.TaskParseredList,
   group string,
   notifyUrl string,
+  waitCmdToRun bool,
 ) ([]model.Task, []([]string)) {
   anchor := 0
   for _, lt := range *lTasks {
@@ -95,6 +96,7 @@ func mergeTasks(
       NotifyUrl: notifyUrl,
       // UpTasks: ups,
       Dag: model.TaskDag(lt),
+      GotCmdToRun: !waitCmdToRun,
       // Cmd: lt.Cmd,
       // ValidateCmd: lt.ValidateCmd,
     }

@@ -24,6 +24,9 @@ func ReadyTasks() {
 
 
 func readyTaskOne(t model.Task) bool {
+  if !t.GotCmdToRun {
+    return false
+  }
   for _, upTask := range t.UpTasks {
     if upTask.Status != model.TaskSuccess {
       return false

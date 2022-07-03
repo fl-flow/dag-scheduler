@@ -23,6 +23,11 @@ func initTaskOne(t model.Task) bool {
     if ret.RowsAffected == 0 {
       return false
     }
+    NotifyTask(
+      ret,
+      t,
+      model.TaskReady,
+    )
     log.Println("task init -> ready: id-", t.ID)
     LockedMemory = LockedMemory + mem
     return false

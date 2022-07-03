@@ -47,6 +47,7 @@ type Task struct {
   // ValidateCmd     string
   CmdRet          string
   NotifyUrl       string
+  GotCmdToRun     bool
 }
 
 
