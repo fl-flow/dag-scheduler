@@ -1,6 +1,13 @@
 package dagschedulerclient
 
 
+type Ret struct {
+  Code    int             `json:"code"`
+  Data    interface{}     `json:"data"`
+  Msg     interface{}     `json:"msg"`
+}
+
+
 type ListData struct {
   Count     int           `json:"count"`
   List      []interface{} `json:"list"`

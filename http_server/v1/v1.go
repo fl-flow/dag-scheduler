@@ -15,4 +15,6 @@ func RegisterRouter(Router *gin.RouterGroup)  {
 
   Router.POST("/job/", app.JobCreate)
 	Router.GET("/job/", app.JobList)
+
+  Router.POST("/task/torun/", app.TaskRunning)
 }
