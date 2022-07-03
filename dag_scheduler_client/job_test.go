@@ -32,6 +32,6 @@ func TestCreat(t *testing.T) {
     }
   `
   json.Unmarshal([]byte(rawJobConf), &jobConf)
-  job, e := CreateJob(jobConf)
-  fmt.Println(job, e)
+  // job, e := CreateJob(jobConf)
+  fmt.Println(jobConf)
 }
