@@ -1,6 +1,11 @@
 package operation
 
-
+// import (
+//   "github.com/fl-flow/dag-scheduler/common/db"
+//   "github.com/fl-flow/dag-scheduler/common/db/model"
+// )
+//
+//
 // func CancelTask(task model.Task, description string) {
 //   db.DataBase.Debug().Model(&model.Task{}).Where(
 //     "status = ?", model.TaskInit,

@@ -90,7 +90,7 @@ func RunReadyTask(t model.Task) {
     t.Group,
     []string(t.Dag.Cmd),
     t.CommonParameter,
-    t.Parameters,
+    t.Parameters.Args,
     inputs,
     len(t.Dag.Output),
   )
