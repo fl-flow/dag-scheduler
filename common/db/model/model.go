@@ -48,6 +48,7 @@ type Task struct {
   CmdRet          string
   NotifyUrl       string
   GotCmdToRun     bool
+  RunOnNode       string
 }
 
 

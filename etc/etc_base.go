@@ -10,3 +10,7 @@ var SchedulerPort int = 8000
 // scheduler loop
 var IsRunSchedulerLoop bool = true
 var SchedulerLoopMemory uint64 = 0
+
+
+// cluster
+var NodeId string = "node 1" // TODO: check
