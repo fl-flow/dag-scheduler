@@ -12,5 +12,10 @@ var IsRunSchedulerLoop bool = true
 var SchedulerLoopMemory uint64 = 0
 
 
+// resource coordinator
+var ResourceCoordinatorIP string = "127.0.0.1"
+var ResourceCoordinatorPort int = 8080
+
+
 // cluster
 var NodeId string = "node 1" // TODO: check

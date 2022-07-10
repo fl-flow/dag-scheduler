@@ -98,9 +98,12 @@ func RunReadyTask(t model.Task) {
   )
 
   // unlock pre-distributed memory
-  MemoryRwMutex.Lock()
-  LockedMemory = LockedMemory - t.Parameters.Setting.Resource.Memory
-  MemoryRwMutex.Unlock()
+  // MemoryRwMutex.Lock()
+  // LockedMemory = LockedMemory - t.Parameters.Setting.Resource.Memory
+  // MemoryRwMutex.Unlock()
+  if !Resource.ResourceNodeDown(t.Parameters.Setting.Resource.Memory) {
+    log.Fatalf("error reset resource error 2")
+  }
 
   // update task status -> success or failed
   if !ok {

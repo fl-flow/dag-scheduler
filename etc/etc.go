@@ -19,6 +19,10 @@ func init() {
   isRunSchedulerLoop := flag.Bool("schedulerloop", IsRunSchedulerLoop, "is run scheduler loop")
   schedulerLoopMemoryMB := flag.Int("schedulerloopmemory", 0, "scheduler loop memory")
 
+  // resource coordinator
+  resourceCoordinatorIP := flag.String("resourcecoordinatorip", ResourceCoordinatorIP, "resource coordinator ip")
+	resourceCoordinatorPort := flag.Int("resourcecoordinatorport", ResourceCoordinatorPort, "resource coordinator port")
+
   flag.Parse()
 
 
@@ -33,6 +37,10 @@ func init() {
   SchedulerLoopMemory = uint64(*schedulerLoopMemoryMB) * 1024 * 1024
   fixSchedulerLoopMemory()
 
+  // resource coordinator
+  ResourceCoordinatorIP  = *resourceCoordinatorIP
+  ResourceCoordinatorPort  = *resourceCoordinatorPort
+
 
   log.Println(fmt.Sprintf(
       `
@@ -44,6 +52,8 @@ func init() {
       // scheduler loop
       isRunSchedulerLoop: %v
       SchedulerLoopMemory: %v
+      ResourceCoordinatorIP: %v
+      ResourceCoordinatorPort: %v
       `,
       // scheduler server
       IsRunHttpApi,
@@ -53,6 +63,10 @@ func init() {
       // scheduler loop
       IsRunSchedulerLoop,
       SchedulerLoopMemory,
+
+      // resource coordinator
+      ResourceCoordinatorIP,
+      ResourceCoordinatorPort,
   ),)
 }
 
