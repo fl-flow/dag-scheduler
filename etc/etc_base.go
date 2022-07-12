@@ -18,4 +18,4 @@ var ResourceCoordinatorPort int = 8080
 
 
 // cluster
-var NodeId string = "node 1" // TODO: check
+var NodeId string = "127.0.0.1:8000" // TODO: check ip-port

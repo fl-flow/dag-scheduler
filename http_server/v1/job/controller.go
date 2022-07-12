@@ -1,17 +1,16 @@
-package controller
+package job
 
 import (
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/error"
   "github.com/fl-flow/dag-scheduler/common/parser"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/http_server/v1/form"
   "github.com/fl-flow/dag-scheduler/common/parser/dag_parser"
 )
 
 
-func JobCreate(
-  f form.JobCreateForm,
+func JobCreateController(
+  f JobCreateForm,
   conf parser.Conf,
 ) (model.Job, *error.Error) {
   var jobNotifyUrl string

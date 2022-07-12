@@ -1,4 +1,4 @@
-package app
+package job
 
 import (
   "fmt"
@@ -7,15 +7,13 @@ import (
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/parser"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/http_server/v1/form"
   "github.com/fl-flow/dag-scheduler/http_server/http/mixin"
-  "github.com/fl-flow/dag-scheduler/http_server/v1/controller"
   "github.com/fl-flow/dag-scheduler/http_server/http/response"
 )
 
 
-func JobCreate(context *gin.Context) {
-  f := form.JobCreateForm{}
+func JobCreateView(context *gin.Context) {
+  f := JobCreateForm{}
 	if e := context.ShouldBindJSON(&f); e != nil {
     response.R(
       context,
@@ -25,7 +23,7 @@ func JobCreate(context *gin.Context) {
     )
     return
 	}
-  job, error := controller.JobCreate(
+  job, error := JobCreateController(
     f,
     parser.Conf {
       Dag: f.Dag,
@@ -45,7 +43,7 @@ func JobCreate(context *gin.Context) {
 }
 
 
-func JobList(context *gin.Context) {
+func JobListView(context *gin.Context) {
   qs, total, page, size := mixin.List(
     context,
     db.DataBase.Model(&model.Job{}),

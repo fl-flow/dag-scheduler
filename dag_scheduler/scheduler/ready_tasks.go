@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+  "fmt"
   "log"
   "encoding/json"
 
@@ -101,7 +102,7 @@ func RunReadyTask(t model.Task) {
   // MemoryRwMutex.Lock()
   // LockedMemory = LockedMemory - t.Parameters.Setting.Resource.Memory
   // MemoryRwMutex.Unlock()
-  if !Resource.ResourceNodeDown(t.Parameters.Setting.Resource.Memory) {
+  if !Resource.ResourceNodeDown(fmt.Sprintf("%v", t.ID)) {
     log.Fatalf("error reset resource error 2")
   }
 

@@ -1,4 +1,4 @@
-package app
+package task
 
 import (
   "fmt"
@@ -6,13 +6,12 @@ import (
 
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/http_server/v1/form"
   "github.com/fl-flow/dag-scheduler/http_server/http/response"
 )
 
 
 func TaskRunning(context *gin.Context) {
-  f := form.TaskRunningForm{}
+  f := TaskRunningForm{}
 	if e := context.ShouldBindJSON(&f); e != nil {
     response.R(
       context,
