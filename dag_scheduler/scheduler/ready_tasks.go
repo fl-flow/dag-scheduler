@@ -10,6 +10,8 @@ import (
   "github.com/fl-flow/dag-scheduler/common/db/model"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/runner"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
+  "github.com/fl-flow/dag-scheduler/dag_scheduler/resource"
+  "github.com/fl-flow/dag-scheduler/dag_scheduler/scheduler/operation"
 )
 
 
@@ -53,6 +55,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: string(b),
     })
+    operation.CancelTask(t, "") // // TODO: description
     NotifyTask(
       ret,
       t,
@@ -96,13 +99,20 @@ func RunReadyTask(t model.Task) {
     t.Parameters.Args,
     inputs,
     len(t.Dag.Output),
+    func(pid int) {
+      db.DataBase.Model(&model.Task{ID: t.ID}).Updates(
+        model.Task{
+          Pid: pid,
+        },
+      )
+    },
   )
 
   // unlock pre-distributed memory
   // MemoryRwMutex.Lock()
   // LockedMemory = LockedMemory - t.Parameters.Setting.Resource.Memory
   // MemoryRwMutex.Unlock()
-  if !Resource.ResourceNodeDown(fmt.Sprintf("%v", t.ID)) {
+  if !resource.ResourceManager.ResourceNodeDown(fmt.Sprintf("%v", t.ID)) {
     log.Fatalf("error reset resource error 2")
   }
 
@@ -114,6 +124,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: description,
     })
+    operation.CancelTask(t, "") // // TODO: description
     NotifyTask(
       ret,
       t,
@@ -134,6 +145,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: string(bt),
     })
+    operation.CancelTask(t, "") // // TODO: description
     NotifyTask(
       ret,
       t,

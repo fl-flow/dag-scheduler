@@ -40,3 +40,23 @@ func TaskRunning(context *gin.Context) {
   }
   response.R(context, 0, "success", map[string]string{})
 }
+
+
+func TaskCancelView(context *gin.Context) {
+  f := TaskCancelForm{}
+	if e := context.ShouldBindJSON(&f); e != nil {
+    response.R(
+      context,
+      100,
+      fmt.Sprintf("%v", e),
+      fmt.Sprintf("%v", e),
+    )
+    return
+	}
+  msg, ret := TaskCancelController(f)
+  if !ret {
+    response.R(context, 100, msg, map[string]string{})
+    return
+  }
+  response.R(context, 0, "success", map[string]string{})
+}

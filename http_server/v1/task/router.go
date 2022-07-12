@@ -7,4 +7,6 @@ import (
 
 func RegisterRouter(Router *gin.RouterGroup)  {
 	Router.POST("/torun/", TaskRunning)
+
+	Router.POST("/cancel/", TaskCancelView)
 }

@@ -6,6 +6,7 @@ import (
 
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
+  "github.com/fl-flow/dag-scheduler/dag_scheduler/resource"
 )
 
 
@@ -17,7 +18,7 @@ func InitTasks() {
 
 func initTaskOne(t model.Task) bool {
   mem := t.Parameters.Setting.Resource.Memory
-  if !Resource.ResourceNodeUp(
+  if !resource.ResourceManager.ResourceNodeUp(
     mem,
     fmt.Sprintf("%v", t.ID),
   ) {
@@ -29,7 +30,7 @@ func initTaskOne(t model.Task) bool {
   //   defer MemoryRwMutex.Unlock()
   ret := db.DataBase.Debug().Model(&model.Task{ID: t.ID}).Where("status = ?", model.TaskInit).Updates(model.Task{Status: model.TaskReady})
   if ret.RowsAffected == 0 {
-    if !Resource.ResourceNodeDown(fmt.Sprintf("%v", t.ID)) {
+    if !resource.ResourceManager.ResourceNodeDown(fmt.Sprintf("%v", t.ID)) {
       log.Fatalf("error reset resource error")
     }
     return false

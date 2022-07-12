@@ -14,6 +14,9 @@ import (
 )
 
 
+type RunningHookType func(pid int)
+
+
 func Run(
   taskID uint,
   jobID uint,
@@ -24,6 +27,7 @@ func Run(
   parameters interface{},
   inputs []tracker.Input,
   outputLength int,
+  runningHook RunningHookType,
 ) ([]string, string, bool) {
   var process *exec.Cmd
   if len(cmd) == 1 {
@@ -50,6 +54,7 @@ func Run(
   )
   go getRet(stdout, &rets, wait)
   process.Start()
+  runningHook(process.Process.Pid)
   errorBytes, _ := io.ReadAll(stderror)
   errorString := string(errorBytes)
   if errorString != "" {
