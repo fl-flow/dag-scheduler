@@ -2,6 +2,7 @@ package dagschedulerclient
 
 import (
   "log"
+  "fmt"
   "encoding/json"
   "github.com/mitchellh/mapstructure"
 
@@ -38,4 +39,14 @@ func ListJob(size int, page int) ([]model.Job, *error.Error) {
   }
   mapstructure.Decode(lr.Data.List, &jobs)
   return jobs, nil
+}
+
+
+func Cancel(jobId uint) *error.Error {
+  fetch(
+    "POST",
+    "/api/v1/job/cancel/",
+    []byte(fmt.Sprintf(`{"job_id": %v}`, jobId)),
+  )
+  return nil
 }

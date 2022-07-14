@@ -8,4 +8,5 @@ import (
 func RegisterRouter(Router *gin.RouterGroup)  {
 	Router.POST("", JobCreateView)
 	Router.GET("", JobListView)
+	Router.POST("/cancel/", JobCancelView)
 }

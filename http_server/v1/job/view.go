@@ -59,3 +59,19 @@ func JobListView(context *gin.Context) {
   )
   return
 }
+
+
+func JobCancelView(context *gin.Context) {
+  f := JobCancelForm{}
+	if e := context.ShouldBindJSON(&f); e != nil {
+    response.R(
+      context,
+      100,
+      fmt.Sprintf("%v", e),
+      fmt.Sprintf("%v", e),
+    )
+    return
+	}
+  error := JobCancelController(f)
+  mixin.CommonResponse(context, "success", error)
+}

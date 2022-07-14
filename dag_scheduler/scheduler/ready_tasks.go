@@ -8,10 +8,10 @@ import (
   "github.com/fl-flow/dag-scheduler/etc"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
+  "github.com/fl-flow/dag-scheduler/common/operation"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/runner"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/resource"
-  "github.com/fl-flow/dag-scheduler/dag_scheduler/scheduler/operation"
 )
 
 
@@ -55,7 +55,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: string(b),
     })
-    operation.CancelTask(t, "") // // TODO: description
+    operation.Cancel(t.JobID, "") // // TODO: description
     NotifyTask(
       ret,
       t,
@@ -124,7 +124,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: description,
     })
-    operation.CancelTask(t, "") // // TODO: description
+    operation.Cancel(t.JobID, "") // // TODO: description
     NotifyTask(
       ret,
       t,
@@ -145,7 +145,7 @@ func RunReadyTask(t model.Task) {
       Status: model.TaskFailed,
       CmdRet: string(bt),
     })
-    operation.CancelTask(t, "") // // TODO: description
+    operation.Cancel(t.JobID, "") // // TODO: description
     NotifyTask(
       ret,
       t,

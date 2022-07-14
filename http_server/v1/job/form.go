@@ -13,3 +13,8 @@ type JobCreateForm struct {
   ID            uint                  `json:"id"`
   WaitCmdToRun  bool                  `json:"wait_cmd_to_run" binding:"required"`
 }
+
+
+type JobCancelForm struct {
+  JobID         uint                  `json:"job_id" binding:"required"`
+}

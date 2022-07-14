@@ -5,11 +5,11 @@ import (
 
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/dag_scheduler/federation"
+  "github.com/fl-flow/dag-scheduler/common/operation/federation"
 )
 
 
-func CancelTask(task model.Task, description string) {
+func Cancel(jobID uint, description string) {
   var ts []model.Task
   db.DataBase.Debug().Model(&model.Task{}).Where(
     "status IN ?", []model.TaskStatus{
@@ -18,7 +18,7 @@ func CancelTask(task model.Task, description string) {
       model.TaskRunning,
     },
   ).Where(
-    "job_id = ?", task.JobID,
+    "job_id = ?", jobID,
   ).Find(&ts)
   var initTaskIDs []uint
   for _, t := range ts {
@@ -50,13 +50,13 @@ func CancelTask(task model.Task, description string) {
     ret := db.DataBase.Debug().Model(&model.Task{}).Where(
       "id IN ?", initTaskIDs,
     ).Where(
-      "job_id = ?", task.JobID,
+      "job_id = ?", jobID,
     ).Updates(model.Task{
       Status: model.TaskCancelled,
       CmdRet: description,
     })
     if ret.RowsAffected != int64(totalInitCount) {
-      CancelTask(task, description)
+      Cancel(jobID, description)
     }
   }
 
