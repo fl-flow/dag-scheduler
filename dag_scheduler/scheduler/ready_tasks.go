@@ -5,7 +5,6 @@ import (
   "log"
   "encoding/json"
 
-  "github.com/fl-flow/dag-scheduler/etc"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
   "github.com/fl-flow/dag-scheduler/common/operation"
@@ -70,7 +69,6 @@ func RunReadyTask(t model.Task) {
     "status = ?", model.TaskReady,
   ).Updates(model.Task{
     Status: model.TaskRunning,
-    RunOnNode: etc.NodeId,
   })
   // status is changed
   if ret.RowsAffected == 0 {
@@ -89,7 +87,7 @@ func RunReadyTask(t model.Task) {
     model.TaskRunning,
   )
 
-  rets, description, ok := runner.Run(
+  summary, rets, description, ok := runner.Run(
     t.ID,
     t.JobID,
     t.Name,
@@ -156,6 +154,7 @@ func RunReadyTask(t model.Task) {
   retSuccess := qs_.Updates(model.Task{
     Status: model.TaskSuccess,
     CmdRet: description,
+    Summary: json.RawMessage(summary),
   })
   NotifyTask(
     retSuccess,

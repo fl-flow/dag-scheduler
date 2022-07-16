@@ -1,7 +1,6 @@
 package jobscheduler
 
 import (
-  "fmt"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
 )
@@ -17,7 +16,6 @@ func RunningJobs() {
 func runningJobOne(j model.Job) {
   isSuccess := true
   for _, t := range j.Tasks {
-    fmt.Println(t.Status, "aaaaaa")
     if t.Status == model.TaskFailed {
       toChangeJobStatus(j, model.JobFailed)
       return

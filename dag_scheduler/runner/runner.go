@@ -2,6 +2,7 @@ package runner
 
 import (
   "io"
+  "log"
   "fmt"
   "sync"
   "bufio"
@@ -28,7 +29,7 @@ func Run(
   inputs []tracker.Input,
   outputLength int,
   runningHook RunningHookType,
-) ([]string, string, bool) {
+) (string, []string, string, bool) {
   var process *exec.Cmd
   if len(cmd) == 1 {
     process = exec.Command(cmd[0])
@@ -41,6 +42,7 @@ func Run(
   wait := &sync.WaitGroup{}
   wait.Add(1)
   var rets []string
+  var summary string
   go inputArgs(
     stdin,
     taskID,
@@ -52,20 +54,20 @@ func Run(
     inputs,
     outputLength,
   )
-  go getRet(stdout, &rets, wait)
+  go getRet(stdout, &summary, &rets, wait)
   process.Start()
   runningHook(process.Process.Pid)
   errorBytes, _ := io.ReadAll(stderror)
   errorString := string(errorBytes)
   if errorString != "" {
-    return rets, fmt.Sprintf(`{"code": error, "error_msg": %v}`, errorString), false
+    return summary, rets, fmt.Sprintf(`{"code": error, "error_msg": %v}`, errorString), false
   }
   e := process.Wait()
   if e != nil {
-    return rets, fmt.Sprintf(`{"code": %v, "error_msg": %v}`, e, errorString), false
+    return summary, rets, fmt.Sprintf(`{"code": %v, "error_msg": %v}`, e, errorString), false
   }
   wait.Wait()
-  return rets, "success", true
+  return summary, rets, "success", true
 }
 
 
@@ -105,9 +107,18 @@ func write2Pipe(w io.Writer, inputData string) {
 }
 
 
-func getRet(r io.Reader, rets *[]string, w *sync.WaitGroup) {
+func getRet(r io.Reader, summary *string, rets *[]string, w *sync.WaitGroup) {
   defer w.Done()
   reader := bufio.NewReader(r)
+  part, prefix, err := reader.ReadLine()
+  if err != nil {
+    log.Fatalln("error get summary err")
+  }
+  if prefix {
+    log.Fatalln("error get summary prefix")
+  }
+  encodedData, _ := base64.StdEncoding.DecodeString(string(part))
+  *summary = string(encodedData)
   for true {
     part, prefix, err := reader.ReadLine()
     if err != nil {

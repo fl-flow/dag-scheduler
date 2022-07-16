@@ -2,6 +2,8 @@ package model
 
 import (
   "time"
+
+  "encoding/json"
 )
 
 
@@ -49,6 +51,7 @@ type Task struct {
   NotifyUrl       string
   GotCmdToRun     bool
   RunOnNode       string
+  Summary         json.RawMessage `gorm:"type:json"`
 }
 
 

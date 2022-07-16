@@ -22,11 +22,11 @@ type CmdType	[]string
 
 func (c CmdType) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *CmdType) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -34,11 +34,11 @@ type JobDag parser.Role2TaskParseredList
 
 func (c JobDag) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *JobDag) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -46,11 +46,11 @@ type JobRawDagmap   parser.Role2DagTaskMap
 
 func (c JobRawDagmap) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *JobRawDagmap) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -58,11 +58,11 @@ type JobParameter   parser.Role2Parameter
 
 func (c JobParameter) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *JobParameter) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -70,11 +70,11 @@ type TaskUpTasks 		[]string
 
 func (c TaskUpTasks) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *TaskUpTasks) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -82,11 +82,11 @@ type TaskDag 	dagparser.TaskParsered
 
 func (c TaskDag) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *TaskDag) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }
 
 
@@ -94,9 +94,9 @@ type TaskParameter parameterparser.TaskParameter
 
 func (c TaskParameter) Value() (driver.Value, error) {
 	b, err := json.Marshal(c)
-	return string(b), err
+	return b, err
 }
 
 func (c *TaskParameter) Scan(src any) error {
-	return json.Unmarshal(([]byte)(src.(string)), c)
+	return json.Unmarshal(([]byte)(src.([]byte)), c)
 }

@@ -22,7 +22,6 @@ func TaskCancelController(f TaskCancelForm) (string, bool) {
   if ret.RowsAffected == 0 {
     return "it is not existed", false
   }
-
   // TODO: switch and move to controller
   if (t.Status == model.TaskInit) {
     ret := db.DataBase.Model(&model.Task{}).Where(
@@ -41,9 +40,9 @@ func TaskCancelController(f TaskCancelForm) (string, bool) {
     }
   }
   if (t.Status == model.TaskReady) {
-    if t.Pid == 0 {
-      return "failed", false
-    }
+    // if t.Pid == 0 {
+    //   return "failed", false
+    // }
     ret := db.DataBase.Model(&model.Task{}).Where(
       "job_id=? AND `group`=? AND name=? AND status = ?",
       f.JobID,
