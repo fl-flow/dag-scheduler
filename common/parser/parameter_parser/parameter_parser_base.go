@@ -12,8 +12,8 @@ type Setting struct {
 
 
 type TaskParameter struct {
-  Args      map[string]string   `json:"args"`
-  Setting   Setting             `json:"setting"`
+  Args      map[string]interface{}  `json:"args"`
+  Setting   Setting                 `json:"setting"`
 }
 
 
