@@ -23,6 +23,9 @@ func init() {
   resourceCoordinatorIP := flag.String("resourcecoordinatorip", ResourceCoordinatorIP, "resource coordinator ip")
 	resourceCoordinatorPort := flag.Int("resourcecoordinatorport", ResourceCoordinatorPort, "resource coordinator port")
 
+  // cluster
+  nodeId := flag.String("nodeid", NodeId, "node id")
+
   flag.Parse()
 
 
@@ -41,6 +44,7 @@ func init() {
   ResourceCoordinatorIP  = *resourceCoordinatorIP
   ResourceCoordinatorPort  = *resourceCoordinatorPort
 
+  NodeId = *nodeId
 
   log.Println(fmt.Sprintf(
       `
@@ -52,8 +56,13 @@ func init() {
       // scheduler loop
       isRunSchedulerLoop: %v
       SchedulerLoopMemory: %v
+
+      // resource coordinator
       ResourceCoordinatorIP: %v
       ResourceCoordinatorPort: %v
+
+      // cluster
+      NodeId: %v
       `,
       // scheduler server
       IsRunHttpApi,
@@ -67,6 +76,9 @@ func init() {
       // resource coordinator
       ResourceCoordinatorIP,
       ResourceCoordinatorPort,
+
+      // cluster
+      NodeId,
   ),)
 }
 

@@ -5,6 +5,7 @@ import (
   "log"
   "encoding/json"
 
+  "github.com/fl-flow/dag-scheduler/etc"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
   "github.com/fl-flow/dag-scheduler/common/operation"
@@ -28,6 +29,9 @@ func ReadyTasks() {
 
 func readyTaskOne(t model.Task) bool {
   if !t.GotCmdToRun {
+    return false
+  }
+  if t.RunOnNode != etc.NodeId {
     return false
   }
   for _, upTask := range t.UpTasks {
