@@ -8,10 +8,10 @@ import (
   "github.com/fl-flow/dag-scheduler/etc"
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
+  "github.com/fl-flow/dag-scheduler/common/resource"
   "github.com/fl-flow/dag-scheduler/common/operation"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/runner"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
-  "github.com/fl-flow/dag-scheduler/dag_scheduler/resource"
 )
 
 

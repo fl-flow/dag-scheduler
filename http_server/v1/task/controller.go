@@ -7,7 +7,7 @@ import (
 
   "github.com/fl-flow/dag-scheduler/common/db"
   "github.com/fl-flow/dag-scheduler/common/db/model"
-  "github.com/fl-flow/dag-scheduler/dag_scheduler/resource"
+  "github.com/fl-flow/dag-scheduler/common/resource"
 )
 
 

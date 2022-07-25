@@ -6,6 +6,7 @@ import (
 
   "github.com/fl-flow/dag-scheduler/http_server/v1/job"
   "github.com/fl-flow/dag-scheduler/http_server/v1/task"
+  "github.com/fl-flow/dag-scheduler/http_server/v1/task_process"
 )
 
 
@@ -13,7 +14,8 @@ func RegisterRouter(Router *gin.RouterGroup)  {
   Router.GET("/version", func(c *gin.Context) {
     c.String(http.StatusOK, "1.0.0")
   })
-  
+
   job.RegisterRouter(Router.Group("job"))
 	task.RegisterRouter(Router.Group("task"))
+  taskprocess.RegisterRouter(Router.Group("task-process"))
 }

@@ -7,6 +7,8 @@ import (
   "github.com/fl-flow/resource-coordinator/client"
 )
 
+
+var Resource *client.ResourceType
 var ResourceManager *client.ResourceNodeType
 
 
@@ -16,12 +18,13 @@ func init()  {
     IP: etc.ResourceCoordinatorIP,
     Port: etc.ResourceCoordinatorPort,
   }
-  resource, ret := resourceCoordinatorClient.NewResource("dagscheduler memery");
+  var ret bool
+  Resource, ret = resourceCoordinatorClient.NewResource("dagscheduler memery");
   if !ret {
     log.Fatalf("error new resource")
   }
   var r bool
-  ResourceManager, r = resource.NewResourceNode(
+  ResourceManager, r = Resource.NewResourceNode(
     etc.NodeId,
     etc.SchedulerLoopMemory,
     0,
