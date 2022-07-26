@@ -4,6 +4,7 @@ import (
   "os"
   "fmt"
   "log"
+  // "bytes"
   "bufio"
   "strings"
   "strconv"
@@ -27,7 +28,6 @@ func RunProcessing(){
     memoryEncodedData, _ := base64.StdEncoding.DecodeString(rets[1])
     memory_ := string(memoryEncodedData)
     memory, err := strconv.ParseInt(memory_, 10, 64)
-    fmt.Println(memory, cmd, "ccccc")
     if err != nil {
       filew.WriteString("fail\n")
       continue
@@ -41,14 +41,16 @@ func RunProcessing(){
       continue
     }
     filew.WriteString("success\n")
-    ch := make(chan string)
-    go getData(reader, ch)
-    p.Run(ch)
+    ch := make(chan multiprocessing.DataStream)
+    chOutput := make(chan multiprocessing.DataStream)
+    go inputData(reader, ch)
+    go p.Run(ch, chOutput)
+    outputData(filew, chOutput)
   }
 }
 
 
-func getData(reader *bufio.Reader, ch chan string) {
+func inputData(reader *bufio.Reader, ch chan multiprocessing.DataStream) {
   for true {
     d := readLine(reader)
     if d == "" {
@@ -65,9 +67,32 @@ func getData(reader *bufio.Reader, ch chan string) {
     if int64(len(buf)) != size {
       log.Fatal("some error size ", length, int64(len(buf)))
     }
-    ch <- "false"
-    ch <- string(buf)
-    fmt.Println(string(buf), "// TODO: ")
+    ch <- multiprocessing.DataStream{
+        Done: false,
+        Data: buf,
+    }
   }
-  ch <- "true"
+  ch <- multiprocessing.DataStream{
+      Done: true,
+  }
+}
+
+
+func outputData(
+  filew *os.File,
+  outputStream chan multiprocessing.DataStream,
+) {
+  w := bufio.NewWriter(filew)
+  for true {
+    d := <- outputStream
+    if d.Done {
+      break
+    }
+    b := string(d.Data)
+    lengthString := strconv.FormatInt(int64(len(b)), 10)
+    w.WriteString(lengthString + "\n")
+    w.WriteString(b)
+  }
+  w.WriteString("\n")
+  w.Flush()
 }
