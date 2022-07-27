@@ -31,15 +31,11 @@ func RunProcess(
   wait.Add(1)
   go func () {
     for true {
-      fmt.Println("s")
       d := <-ch
-      fmt.Println("e")
-      fmt.Println(d.Done, "dddd")
       if d.Done {
         stdin.Close()
         return
       }
-      fmt.Println(string(d.Data), "d.Datad.Datad.Data")
       stdin.Write(d.Data)
     }
   }()

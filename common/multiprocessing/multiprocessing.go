@@ -72,8 +72,8 @@ func (p *Process)Run(ch chan DataStream, chOutput chan DataStream) {
   if err != nil {
     log.Fatal(err)
   }
-  buf := make([]byte, 1024)
   for true {
+    buf := make([]byte, 1024)
     length, e := response.Body.Read(buf)
     if e == io.EOF {
       if length > 0 {

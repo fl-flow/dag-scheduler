@@ -2,10 +2,8 @@ package taskprocess
 
 import (
   "log"
-  "fmt"
   "bytes"
   "bufio"
-  "strconv"
 )
 
 
@@ -19,7 +17,6 @@ type BlockHeader struct{
   ContentDisposition  string
   Name                string
   ContentType         string
-  ContentLength       int64
 }
 
 
@@ -28,7 +25,6 @@ const (
   NAME =  ("name=\"")
   FILENAME = ("filename=\"")
   CONTENT_TYPE = ("Content-Type: ")
-  CONTENT_LENGTH = ("Content-Length: ")
 )
 
 const BOUNDARY string = "; boundary="
@@ -55,7 +51,6 @@ func parseBlockHeader(reader *bufio.Reader) (BlockHeader, bool) {
   var b BlockHeader
   for cont {
     part, prefix, err := reader.ReadLine()
-    fmt.Println(string(part), "iiiiii")
     if err != nil {
       return b, false
     }
@@ -73,9 +68,6 @@ func parseBlockHeader(reader *bufio.Reader) (BlockHeader, bool) {
       }
     }else if bytes.HasPrefix(part, []byte(CONTENT_TYPE)) {
       b.ContentType = string(part[len(CONTENT_TYPE):])
-    } else if bytes.HasPrefix(part, []byte(CONTENT_LENGTH)) {
-      l, _ := strconv.ParseInt(string(part[len(CONTENT_LENGTH):]), 10, 64)
-      b.ContentLength = l
     } else {
       log.Fatalf("error upload")
     }
@@ -85,19 +77,29 @@ func parseBlockHeader(reader *bufio.Reader) (BlockHeader, bool) {
 
 
 func readData(reader *bufio.Reader, boundary []byte, ch chan ProcessRetChanDataType, h BlockHeader) {
-  fmt.Println(h.ContentLength, "ccccc")
+  former, prefix, err := reader.ReadLine()
+  if err != nil || prefix || bytes.Index(former, boundary) > 0 {
+    ch <- ProcessRetChanDataType {
+      Done: true,
+    }
+    return
+  }
   for true {
     part, prefix, err := reader.ReadLine()
-    fmt.Println(string(part), prefix, err, "eeeee")
     if err != nil || prefix || bytes.Index(part, boundary) > 0 {
+      ch <- ProcessRetChanDataType {
+        Data: former,
+        Done: false,
+      }
       ch <- ProcessRetChanDataType {
         Done: true,
       }
       return
     }
     ch <- ProcessRetChanDataType {
-      Data: bytes.Join([][]byte{part, []byte("\n")}, []byte("")),
+      Data: bytes.Join([][]byte{former, []byte("\n")}, []byte("")),
       Done: false,
     }
+    former = part
   }
 }

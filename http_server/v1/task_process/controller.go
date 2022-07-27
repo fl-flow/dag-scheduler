@@ -1,10 +1,9 @@
 package taskprocess
 
 import (
-  "strings"
-  "fmt"
   "log"
   "bufio"
+  "strings"
 )
 
 
@@ -33,9 +32,7 @@ func TaskProcessController(
           log.Println("got Cmd: ", cmd)
         }
       }()
-      fmt.Println("s")
       readData(reader, boundary, ch, b)
-      fmt.Println("e")
     } else if b.Name == "data" {
       ch = make(chan ProcessRetChanDataType, 128)
       if cmd == "" {
