@@ -4,6 +4,7 @@ import (
   "io"
   "log"
   "fmt"
+  "sync"
   "bytes"
   "net/http"
   "mime/multipart"
@@ -22,6 +23,7 @@ type Process struct {
   Node      string
   Uid       string
   Memory    uint
+  Done      *sync.WaitGroup
 }
 
 
@@ -29,15 +31,25 @@ func NewProcess(
   cmd string,
   memory uint,
 ) (*Process, bool) {
-  node, uid, success := resource.Resource.Alloc(memory)
-  if !success {
-    return nil, success
-  }
+  wait := &sync.WaitGroup{}
+  wait.Add(1)
+  argWait := &sync.WaitGroup{}
+  argWait.Add(1)
+  var node, uid string
+  go resource.Resource.Allocating(
+    memory,
+    &node,
+    &uid,
+    argWait,
+    wait,
+  )
+  argWait.Wait()
   return &Process{
     Cmd: cmd,
     Node: node,
     Uid: uid,
     Memory: memory,
+    Done: wait,
   }, true
 }
 
@@ -85,6 +97,12 @@ func (p *Process)Run(ch chan DataStream, chOutput chan DataStream) {
       chOutput <- DataStream{
         Done: true,
       }
+      p.Done.Done()
+      // if !resource.Resource.ResourceNodeDown(p.Node, p.Uid) {
+      //   log.Fatal(
+      //     fmt.Sprintf("error resource down node: %v, uid: %v", p.Node, p.Uid),
+      //   )
+      // }
       break
     }
     // TODO: assert http error
