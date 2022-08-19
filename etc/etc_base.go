@@ -11,6 +11,9 @@ var SchedulerPort int = 8000
 var IsRunSchedulerLoop bool = true
 var SchedulerLoopMemory uint64 = 0
 
+// distributed multiprocess
+var MultiprocessIp string = "127.0.0.1"
+var MultiprocessPort int = 8502
 
 // resource coordinator
 var ResourceCoordinatorIP string = "127.0.0.1"

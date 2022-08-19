@@ -1,53 +1,74 @@
 package processingscheduler
 
 import (
-  "os"
+  "net"
   "fmt"
   "log"
-  // "bytes"
   "bufio"
   "strings"
   "strconv"
   "encoding/base64"
 
   "github.com/fl-flow/dag-scheduler/common/multiprocessing"
+
+  "github.com/fl-flow/dag-scheduler/etc"
 )
 
 
-func RunProcessing(){
+func RunProcessing(con net.Conn){
+  reader := bufio.NewReader(con)
+  writer := bufio.NewWriter(con)
+  b := readLine(reader)
+  rets := strings.SplitN(b, ",", 2)
+  cmdEncodedData, _ := base64.StdEncoding.DecodeString(rets[0])
+  cmd := string(cmdEncodedData)
+  memoryEncodedData, _ := base64.StdEncoding.DecodeString(rets[1])
+  memory_ := string(memoryEncodedData)
+  memory, err := strconv.ParseInt(memory_, 10, 64)
+  if err != nil {
+    writer.WriteString("fail\n")
+    writer.Flush()
+    return
+  }
+  p, success := multiprocessing.NewProcess(
+    cmd,
+    uint(memory),
+  )
+  if !success {
+    writer.WriteString("fail\n")
+    writer.Flush()
+    return
+  }
+  writer.WriteString("success\n")
+  writer.Flush()
+  ch := make(chan multiprocessing.DataStream)
+  chOutput := make(chan multiprocessing.DataStream)
+  go inputData(reader, ch)
+  go p.Run(ch, chOutput)
+  outputData(con, chOutput)
+  con.Close()
+}
+
+
+
+func RunServer() {
   defer Wait.Done()
-  file, _ := os.OpenFile(PipeFile, os.O_RDWR, os.ModeNamedPipe)
-  filew, _ := os.OpenFile(PipeFileW, os.O_RDWR, os.ModeNamedPipe)
-  reader := bufio.NewReader(file)
-  // TODO: semaphore
-  for true {
-    b := readLine(reader)
-    rets := strings.SplitN(b, ",", 2)
-    cmdEncodedData, _ := base64.StdEncoding.DecodeString(rets[0])
-    cmd := string(cmdEncodedData)
-    memoryEncodedData, _ := base64.StdEncoding.DecodeString(rets[1])
-    memory_ := string(memoryEncodedData)
-    memory, err := strconv.ParseInt(memory_, 10, 64)
-    if err != nil {
-      filew.WriteString("fail\n")
-      continue
+  listener, err :=net.Listen(
+    "tcp",
+    fmt.Sprintf("%v:%v", etc.MultiprocessIp, etc.MultiprocessPort),
+  )
+  if err != nil {
+    log.Fatal("error process server start: %v", err)
+  }
+  for {
+    conn,e := listener.Accept()
+    if e != nil {
+      log.Fatal("error process accept %v", e)
     }
-    p, success := multiprocessing.NewProcess(
-      cmd,
-      uint(memory),
-    )
-    if !success {
-      filew.WriteString("fail\n")
-      continue
-    }
-    filew.WriteString("success\n")
-    ch := make(chan multiprocessing.DataStream)
-    chOutput := make(chan multiprocessing.DataStream)
-    go inputData(reader, ch)
-    go p.Run(ch, chOutput)
-    outputData(filew, chOutput)
+    go RunProcessing(conn)
   }
 }
+
 
 
 func inputData(reader *bufio.Reader, ch chan multiprocessing.DataStream) {
@@ -79,10 +100,10 @@ func inputData(reader *bufio.Reader, ch chan multiprocessing.DataStream) {
 
 
 func outputData(
-  filew *os.File,
+  con net.Conn,
   outputStream chan multiprocessing.DataStream,
 ) {
-  w := bufio.NewWriter(filew)
+  w := bufio.NewWriter(con)
   for true {
     d := <- outputStream
     if d.Done {
