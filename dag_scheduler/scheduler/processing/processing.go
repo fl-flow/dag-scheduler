@@ -28,6 +28,7 @@ func RunProcessing(con net.Conn){
   if err != nil {
     writer.WriteString("fail\n")
     writer.Flush()
+    con.Close()
     return
   }
   p, success := multiprocessing.NewProcess(
@@ -37,6 +38,7 @@ func RunProcessing(con net.Conn){
   if !success {
     writer.WriteString("fail\n")
     writer.Flush()
+    con.Close()
     return
   }
   writer.WriteString("success\n")
