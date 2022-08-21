@@ -10,6 +10,7 @@ import (
   "encoding/json"
   "encoding/base64"
 
+  "github.com/fl-flow/dag-scheduler/common/parser/parameter_parser"
   "github.com/fl-flow/dag-scheduler/dag_scheduler/tracker"
 )
 
@@ -25,6 +26,7 @@ func Run(
   cmd []string,
   commonParameters string,
   parameters interface{},
+  settingParameters parameterparser.Setting,
   inputs []tracker.Input,
   outputLength int,
   runningHook RunningHookType,
@@ -50,6 +52,7 @@ func Run(
     group,
     commonParameters,
     parameters,
+    settingParameters,
     inputs,
     outputLength,
   )
@@ -82,6 +85,7 @@ func inputArgs(
   group string,
   commonParameters string,
   parameters interface {},
+  settingParameters parameterparser.Setting,
   inputs []tracker.Input,
   outputLength int,
 ) {
@@ -92,6 +96,8 @@ func inputArgs(
     "task_name": taskName,
   })
   write2Pipe(w, string(taskInfo))
+  settingParametersBytes, _ := json.Marshal(settingParameters)
+  write2Pipe(w, string(settingParametersBytes))
   write2Pipe(w, commonParameters)
   parametersBytes, _ := json.Marshal(parameters)
   write2Pipe(w, string(parametersBytes))

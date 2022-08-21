@@ -99,6 +99,7 @@ func RunReadyTask(t model.Task) {
     []string(t.Dag.Cmd),
     t.CommonParameter,
     t.Parameters.Args,
+    t.Parameters.Setting,
     inputs,
     len(t.Dag.Output),
     func(pid int) {
