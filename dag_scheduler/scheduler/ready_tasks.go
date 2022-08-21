@@ -91,6 +91,12 @@ func RunReadyTask(t model.Task) {
     model.TaskRunning,
   )
 
+  // get output annotations
+  outputAnnotations := make(map[string]string)
+  for _, output := range t.Dag.Output {
+    outputAnnotations[output.Tag] = output.Annotation
+  }
+
   summary, rets, description, ok := runner.Run(
     t.ID,
     t.JobID,
@@ -101,7 +107,7 @@ func RunReadyTask(t model.Task) {
     t.Parameters.Args,
     t.Parameters.Setting,
     inputs,
-    len(t.Dag.Output),
+    outputAnnotations,
     func(pid int) {
       db.DataBase.Model(&model.Task{ID: t.ID}).Updates(
         model.Task{

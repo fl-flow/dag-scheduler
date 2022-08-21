@@ -28,10 +28,15 @@ type TaskDepandent struct {
 
 type TasksDepandentMap map[string]*TaskDepandent
 
+type TaskOutput struct {
+  Tag           string
+  Annotation    string
+}
+
 type TaskParsered struct {
   Name          string
   Depandent     TaskDepandent
-  Output        []string
+  Output        []TaskOutput
   Cmd           []string
   ValidateCmd   string
 }

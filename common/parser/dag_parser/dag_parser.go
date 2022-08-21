@@ -133,6 +133,27 @@ func (tasksDepandentMap TasksDepandentMap) checkLoop(inDegreeMap map[string]int)
 }
 
 
+func parseOutput(output []string) []TaskOutput {
+  var ret []TaskOutput 
+  for _, item := range output {
+    // tag.annotation
+    tagAnnotation := strings.SplitN(item, ":", 2)
+    if len(tagAnnotation) != 2 {
+      ret = append(ret, TaskOutput{
+        Tag: tagAnnotation[0],
+        Annotation: "",
+      })
+      continue
+    }
+    ret = append(ret, TaskOutput{
+      Tag: tagAnnotation[0],
+      Annotation: tagAnnotation[1],
+    })
+  }
+  return ret
+}
+
+
 func buildTaskParsered(
   tasksDepandentMap TasksDepandentMap,
   orderedTasks []string,
@@ -145,7 +166,7 @@ func buildTaskParsered(
         TaskParsered {
           Name: taskName,
           Depandent: *(tasksDepandentMap[taskName]),
-          Output: dagTaskMap[taskName].Output,
+          Output: parseOutput(dagTaskMap[taskName].Output),
           Cmd: dagTaskMap[taskName].Cmd,
           ValidateCmd: dagTaskMap[taskName].ValidateCmd,
         },

@@ -28,7 +28,7 @@ func Run(
   parameters interface{},
   settingParameters parameterparser.Setting,
   inputs []tracker.Input,
-  outputLength int,
+  outputAnnotations map[string]string,
   runningHook RunningHookType,
 ) (string, []string, string, bool) {
   var process *exec.Cmd
@@ -54,7 +54,7 @@ func Run(
     parameters,
     settingParameters,
     inputs,
-    outputLength,
+    outputAnnotations,
   )
   var retErrString string
   go getRet(stdout, &summary, &rets, wait, &retErrString)
@@ -87,7 +87,7 @@ func inputArgs(
   parameters interface {},
   settingParameters parameterparser.Setting,
   inputs []tracker.Input,
-  outputLength int,
+  outputAnnotations map[string]string,
 ) {
   taskInfo, _ := json.Marshal(map[string]string{
     "job_id": strconv.Itoa(int(jobID)),
@@ -102,7 +102,8 @@ func inputArgs(
   parametersBytes, _ := json.Marshal(parameters)
   write2Pipe(w, string(parametersBytes))
   write2Pipe(w, strconv.Itoa(len(inputs)))
-  write2Pipe(w, strconv.Itoa(outputLength))
+  outputAnnotationsBytes, _ := json.Marshal(outputAnnotations)
+  write2Pipe(w, string(outputAnnotationsBytes))
   for _, i := range inputs {
     input, _ := json.Marshal(i)
     write2Pipe(w, string(input))
